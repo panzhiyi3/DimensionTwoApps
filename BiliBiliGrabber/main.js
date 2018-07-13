@@ -7,7 +7,7 @@ let mainWindow
 
 function createWindow () {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 800, height: 600, frame: false, transparent: true, backgroundColor: "#77777777"})
+  mainWindow = new BrowserWindow({width: 800, height: 600, frame: false, transparent: true}) //backgroundColor: "#77777777"
 
   var id = mainWindow.id
 
