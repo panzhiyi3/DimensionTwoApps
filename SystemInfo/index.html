@@ -2,89 +2,25 @@
 <html>
 
 <head>
-  <link rel="stylesheet" type="text/css" href="style.css">
-  <meta charset="UTF-8">
-  <title>Hello World!</title>
-
-  <style type="text/css">
-    div {
-      margin: 1rem;
-      background: #eee;
-      padding: .3rem;
-      position: relative
-    }
-
-    div canvas {
-      background: #cacaca;
-      -webkit-transform: rotateZ(-270deg);
-      transform: rotateZ(-270deg);
-      -webkit-animation: ani01 1s ease 0s both;
-      animation: ani01 1s ease 0s both;
-    }
-
-    @-webkit-keyframes ani01 {
-      0% {
-        -webkit-transform: scale(.5, .5) rotateZ(-270deg);
-        transform: scale(.5, .5) rotateZ(-270deg);
-      }
-      100% {
-        -webkit-transform: scale(1, 1) rotateZ(-90deg);
-        transform: scale(1, 1) rotateZ(-90deg);
-      }
-    }
-
-    @keyframes ani01 {
-      0% {
-        -webkit-transform: scale(.5, .5) rotateZ(-270deg);
-        transform: scale(.5, .5) rotateZ(-270deg);
-      }
-      100% {
-        -webkit-transform: scale(1, 1) rotateZ(-90deg);
-        transform: scale(1, 1) rotateZ(-90deg);
-      }
-    }
-  </style>
-
-  <style>
-    .progress-meter .background {
-      fill: #ccc;
-    }
-
-    .progress-meter .foreground {
-      fill: #000;
-    }
-
-    .progress-meter text {
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-      font-size: 24px;
-      font-weight: bold;
-    }
-  </style>
-
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <meta charset="UTF-8">
+    <title>System Monitor</title>
 </head>
 
 <body>
-  <h1>Hello World!</h1>
-  <!-- All of the Node.js APIs are available in this renderer process. -->
-  We are using Node.js
-  <script>document.write(process.versions.node)</script>, Chromium
-  <script>document.write(process.versions.chrome)</script>, and Electron
-  <script>document.write(process.versions.electron)</script>.
+    <div class="background">
+        <svg id="cpuUsage"></svg>
+        <svg id="ramUsage"></svg>
+    </div>
 
-  <!--p id="cpu">cpu usage:0%</p-->
+    <div class="corner">
+        <div class="left-drag"></div>
+        <div class="right-drag"></div>
+    </div>
 
-  <!--div>
-    <canvas id="cpuCanvas" data-percent="80">
-      您的浏览器不支持canvas标签。
-    </canvas>
-    <span style="display:block;position:absolute;top:.94rem;left:.3rem;width:2rem;text-align:center;font-size:.5rem;font-family:microsoft Yahei" id="cpuUsage">0</span>
-  </div-->
-
-  <script>
-    // You can also require other files to run in this process
-    //require('./d3.js')
-    require('./renderer.js')
-  </script>
+    <script>
+        require('./renderer.js')
+    </script>
 </body>
 
 </html>

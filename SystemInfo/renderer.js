@@ -1,37 +1,37 @@
-// This file is required by the index.html file and will
-// be executed in the renderer process for that window.
-// All of the Node.js APIs are available in this process.
 var os = require("os")
 var d3 = require("./d3.js")
 
 var startMeasure = cpuAverage()
 
-var pper = 0;
-var pperInteral;
-var cpuUsage = document.getElementById('cpuUsage');
-
-//drawCanvanPercent('cpuCanvas', 'rem', 2, '#0e9cfa', 0.2, '#fff');
-
-//Set delay for second Measure
 setTimeout(doCalc, 1000)
 
-var width = 300,
-    height = 300,
+var width = window.innerWidth,
+    height = window.innerHeight,
+    radius = 70,
+    innerRadius = 40,
+    ringRadius = 76,
     twoPi = 2 * Math.PI,
     progress = 0,
-    total = 100, // must be hard-coded if server doesn't report Content-Length
+    progressRam = 0,
+    total = 100,
     formatPercent = d3.format(".0%");
 
 var arc = d3.arc()
     .startAngle(0)
-    .innerRadius(100)
-    .outerRadius(140);
+    .innerRadius(innerRadius)
+    .outerRadius(radius);
 
-var svg = d3.select("body").append("svg")
-    .attr("width", width)
-    .attr("height", height)
+var arcRing = d3.arc()
+    .startAngle(0)
+    .innerRadius(ringRadius - 3)
+    .outerRadius(ringRadius);
+
+// CPU
+var svg = d3.select("#cpuUsage")
+    .attr("width", ringRadius * 2)
+    .attr("height", ringRadius * 2)
     .append("g")
-    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+    .attr("transform", "translate(" + ringRadius + "," + ringRadius + ")");
 
 var meter = svg.append("g")
     .attr("class", "progress-meter");
@@ -43,44 +43,82 @@ meter.append("path")
 var foreground = meter.append("path")
     .attr("class", "foreground");
 
+meter.append("path")
+    .attr("class", "foreground-ring")
+    .attr("d", arcRing.endAngle(twoPi));
+
 var text = meter.append("text")
     .attr("text-anchor", "middle")
-    .attr("dy", ".35em");
+    .attr("dy", ".35em")
+    .text("CPU");
 
-var i = d3.interpolate(progress, 0 / total);
-d3.transition().tween("progress", function () {
+// RAM
+var svgRam = d3.select("#ramUsage")
+    .attr("width", ringRadius * 2)
+    .attr("height", ringRadius * 2)
+    .append("g")
+    .attr("transform", "translate(" + ringRadius + "," + ringRadius + ")");
+
+var meterRam = svgRam.append("g")
+    .attr("class", "progress-meter");
+
+meterRam.append("path")
+    .attr("class", "background")
+    .attr("d", arc.endAngle(twoPi));
+
+var foregroundRam = meterRam.append("path")
+    .attr("class", "foreground");
+
+    meterRam.append("path")
+    .attr("class", "foreground-ring")
+    .attr("d", arcRing.endAngle(twoPi));
+
+var textRam = meterRam.append("text")
+    .attr("text-anchor", "middle")
+    .attr("dy", ".35em")
+    .text("RAM");
+
+foreground.transition().tween("progress", function () {
+    var i = d3.interpolate(progress, 0 / total);
     return function (t) {
         progress = i(t);
         foreground.attr("d", arc.endAngle(twoPi * progress));
-        text.text(formatPercent(progress));
+        //text.text(formatPercent(progress));
     };
 });
 
-//meter.transition().delay(250).attr("transform", "scale(1)");
+foregroundRam.transition().tween("progressRam", function () {
+    var i = d3.interpolate(progressRam, 0 / total);
+    return function (t) {
+        progressRam = i(t);
+        foregroundRam.attr("d", arc.endAngle(twoPi * progressRam));
+    };
+});
 
 function doCalc() {
-    //Grab second Measure
     var endMeasure = cpuAverage();
 
-    //Calculate the difference in idle and total time between the measures
     var idleDifference = endMeasure.idle - startMeasure.idle
     var totalDifference = endMeasure.total - startMeasure.total
 
-    //Calculate the average percentage CPU usage
     var percentageCPU = 100 - ~~(100 * idleDifference / totalDifference) //parseInt
 
-    //Output result to console
-    console.log(percentageCPU + "% CPU Usage.")
-
-    //var cpuusage = document.getElementById("cpu")
-    //cpuusage.innerHTML = percentageCPU + "% CPU Usage."
-
-    var i = d3.interpolate(progress, percentageCPU / 100);
-    d3.transition().tween("progress", function () {
+    foreground.transition().tween("progress", function () {
+        var i = d3.interpolate(progress, percentageCPU / 100);
         return function (t) {
             progress = i(t);
             foreground.attr("d", arc.endAngle(twoPi * progress));
-            text.text(formatPercent(progress));
+            //text.text(formatPercent(progress));
+        };
+    });
+
+    var mem = ~~(os.freemem() / os.totalmem() * 100);
+
+    foregroundRam.transition().tween("progressRam", function () {
+        var i = d3.interpolate(progressRam, mem / 100);
+        return function (t) {
+            progressRam = i(t);
+            foregroundRam.attr("d", arc.endAngle(twoPi * progressRam));
         };
     });
 
@@ -90,67 +128,18 @@ function doCalc() {
 }
 
 function cpuAverage() {
-    //Initialise sum of idle and time of cores and fetch CPU info
     var totalIdle = 0, totalTick = 0
     var cpus = os.cpus()
 
-    //Loop through CPU cores
     for (var i = 0, len = cpus.length; i < len; i++) {
-        //Select CPU core
         var cpu = cpus[i]
 
-        //Total up the time in the cores tick
         for (type in cpu.times) {
             totalTick += cpu.times[type]
         }
 
-        //Total up the idle time of the core
         totalIdle += cpu.times.idle
     }
 
-    //Return the average Idle and Tick times
     return { idle: totalIdle / cpus.length, total: totalTick / cpus.length }
-}
-
-function drawCanvanPercent(ele_id, dw, cir_r, cir_color, line_w, fill_color) {
-    if (dw == "rem") {
-        cir_r = cir_r * (window.screen.width / 10);
-        line_w = line_w * (window.screen.width / 10);
-    }
-    var canvas = document.getElementById(ele_id);
-    var circle =
-    {
-        r: cir_r / 2,      //圆的半径
-        per: canvas.getAttribute('data-percent'),      //百分比分子
-        color: cir_color,      //圆的颜色
-        lineWidth: line_w      //圆的颜色
-    };
-    canvas.width = canvas.height = circle.r * 2;
-    canvas.style.borderRadius = "50%";
-    if (canvas.getContext) {
-        var ctx2 = canvas.getContext("2d");
-        ctx2.fillStyle = fill_color;
-        ctx2.arc(circle.r, circle.r, circle.r - circle.lineWidth / 2, 0, Math.PI * 2, false);
-        ctx2.fill();
-        var ctx = canvas.getContext("2d");
-        pperInteral = setInterval(function () {
-            drawMove(ctx, circle);
-        }, 10);
-    }
-}
-
-function drawMove(ctx, circle) {
-    if (pper >= circle.per) {
-        pper = circle.per;
-        clearTimeout(pperInteral);
-    }
-    else {
-        pper++;
-    }
-    dushu.innerText = pper + '%';
-    ctx.beginPath();
-    ctx.strokeStyle = circle.color;
-    ctx.lineWidth = circle.lineWidth;
-    ctx.arc(circle.r, circle.r, circle.r, 0, Math.PI * (pper / 100) * 360 / 180, false);
-    ctx.stroke();
 }
