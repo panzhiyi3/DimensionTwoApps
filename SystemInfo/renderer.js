@@ -1,5 +1,5 @@
 var os = require("os")
-var d3 = require("./d3.js")
+var d3 = require("./d3.min.js")
 
 var startMeasure = cpuAverage()
 
@@ -8,8 +8,8 @@ setTimeout(doCalc, 1000)
 var width = window.innerWidth,
     height = window.innerHeight,
     radius = 70,
-    innerRadius = 40,
-    ringRadius = 76,
+    innerRadius = 50,
+    ringRadius = 75,
     twoPi = 2 * Math.PI,
     progress = 0,
     progressRam = 0,
@@ -23,7 +23,7 @@ var arc = d3.arc()
 
 var arcRing = d3.arc()
     .startAngle(0)
-    .innerRadius(ringRadius - 3)
+    .innerRadius(ringRadius - 2)
     .outerRadius(ringRadius);
 
 // CPU

@@ -8,14 +8,14 @@ let mainWindow
 
 function createWindow () {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 334, height: 180, frame: false, transparent: true})
+  mainWindow = new BrowserWindow({width: 500, height: 500, frame: false, transparent: true})
   var id = mainWindow.id
 
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
 
   // Open the DevTools.
-  //mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {

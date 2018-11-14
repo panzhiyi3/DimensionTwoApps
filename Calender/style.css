@@ -1,0 +1,131 @@
+* {
+    font: 14px Arial,sans-serif;
+}
+
+:root {
+    --text-color: rgb(230, 230, 242);
+}
+
+body {
+    overflow: hidden;
+    user-select: none;
+    margin: 0px;
+    /* -webkit-app-region: drag; */
+}
+
+.background {
+    -webkit-app-region: drag;
+    margin: 5px;
+}
+
+svg {
+    margin: 5px;
+}
+
+.footer {
+    height: 4px;
+    clear: both;
+}
+
+div {
+    text-shadow: 0 0 4px rgba(0,0,0,0.2);
+}
+
+.top_part {
+    margin-right: 20px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+/* Left part */
+
+.div_month {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.time {
+    text-align: right;
+    font-size: 60px;
+    font-weight: 600;
+    line-height: 0%;
+    color: var(--text-color);
+}
+
+.week {
+    text-align: right;
+    font-size: 24px;
+    line-height: 0%;
+    color: var(--text-color);
+}
+
+.month {
+    text-align: right;
+    font-size: 30px;
+    line-height: 0%;
+    color: var(--text-color);
+}
+
+.monthday {
+    text-align: right;
+    margin-left: 0.5em;
+    font-size: 36px;
+    line-height: 0%;
+    color: var(--text-color);
+}
+
+
+/* Clock part */
+.clock {
+    width: 80px;
+    height: 80px;
+    border: 3px solid var(--text-color);
+    border-radius: 100px;
+    float: left;
+    margin: 50px 50px;
+    box-shadow: 0 0 4px rgba(0,0,0,0.2);
+}
+
+#clock_hours {
+    width: 65px;
+    height: 3px;
+    margin: 40px 40px;
+    border-radius: 2px;
+    background: var(--text-color);
+    transform-origin: left bottom;
+    box-shadow: 0 0 4px rgba(0,0,0,0.2);
+}
+
+#clock_minutes {
+    width: 85px;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--text-color);
+    margin: -40px 40px;
+    transform-origin: left bottom;
+    transform: rotate(0deg);
+    box-shadow: 0 0 4px rgba(0,0,0,0.2);
+}
+
+#clock_seconds {
+    width: 45px;
+    height: 3px;
+    background: var(--text-color);
+    margin: 40px 0px;
+    transform-origin: left bottom;
+    transform: rotate(0deg);
+}
+
+.clock_trans {
+    transform: rotate(-90deg);
+}
+
+#clock_center {
+    width: 3px;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--text-color);
+    margin: 37px 37px;
+}

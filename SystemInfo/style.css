@@ -10,7 +10,9 @@ body {
 .background {
     -webkit-app-region: drag;
     border-radius: 2px;
-    /* background: rgba(204, 226, 255, 0.1); */
+    border: 1px solid rgba(222, 222, 255, 0.4);
+    box-shadow: inset 0 0 50px 0 rgba(222, 222, 255, 0.2);
+    background: rgba(0, 0, 0, 0.6);
 }
 
 svg {
@@ -49,15 +51,15 @@ svg {
 }
 
 .progress-meter .background {
-    fill: rgba(222, 222, 255, 0.5);
+    fill: rgba(222, 222, 255, 0.4);
 }
 
 .progress-meter .foreground {
-    fill: rgb(222, 222, 255);
+    fill: rgba(222, 222, 255, 0.8);
 }
 
 .progress-meter .foreground-ring {
-    fill: rgba(255, 255, 255, 0.9)
+    fill: rgba(255, 255, 255, 0.8)
 }
 
 .progress-meter text {

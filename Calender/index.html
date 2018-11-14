@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <meta charset="UTF-8">
+    <title>Calender</title>
+</head>
+
+<body>
+    <div class="background">
+        <div class="top_part">
+            <div class="left_part">
+                <p id="time" class="time">20:14</p>
+                <p id="week" class="week">Sunday</p>
+                <div class="div_month">
+                    <p id="month" class="month">September</p>
+                    <p id="monthday" class="monthday">3rd</p>
+                </div>
+            </div>
+            <div class="clock">
+                <div id="clock_hours" class="clock_trans"></div>
+                <div id="clock_minutes" class="clock_trans"></div>
+                <div id="clock_center"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        require('./renderer.js')
+    </script>
+</body>
+
+</html>
