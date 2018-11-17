@@ -9,9 +9,9 @@
             "type": "node",
             "request": "launch",
             "cwd": "${workspaceRoot}",
-            "runtimeExecutable": "C:\\Users\\aeropan\\Desktop\\electron-v3.0.0-beta.2-win32-x64\\electron.exe",
+            "runtimeExecutable": "D:\\development\\electron-v2.0.13-win32-ia32\\electron.exe",
             "windows": {
-              "runtimeExecutable": "C:\\Users\\aeropan\\Desktop\\electron-v3.0.0-beta.2-win32-x64\\electron.exe"
+              "runtimeExecutable": "D:\\development\\electron-v2.0.13-win32-ia32\\electron.exe"
             },
             "args" : ["."]
           }

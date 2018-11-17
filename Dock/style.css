@@ -3,18 +3,28 @@
 }
 
 :root {
-    --text-color: rgb(230, 230, 240);
+    --text-color: rgb(230, 230, 242);
 }
 
 body {
     overflow: hidden;
     user-select: none;
     margin: 0px;
+    /* -webkit-app-region: drag; */
 }
 
 .background {
     -webkit-app-region: drag;
     margin: 5px;
+}
+
+svg {
+    margin: 5px;
+}
+
+.footer {
+    height: 4px;
+    clear: both;
 }
 
 div {
@@ -79,12 +89,12 @@ div {
 }
 
 #clock_hours {
-    width: 55px;
+    width: 65px;
     height: 3px;
-    margin: 39px 42px;
+    margin: 40px 40px;
     border-radius: 2px;
     background: var(--text-color);
-    transform-origin: left center;
+    transform-origin: left bottom;
     box-shadow: 0 0 4px rgba(0,0,0,0.2);
 }
 
@@ -93,8 +103,8 @@ div {
     height: 3px;
     border-radius: 2px;
     background: var(--text-color);
-    margin: -42px 41px;
-    transform-origin: 1px center;
+    margin: -40px 40px;
+    transform-origin: left bottom;
     transform: rotate(0deg);
     box-shadow: 0 0 4px rgba(0,0,0,0.2);
 }

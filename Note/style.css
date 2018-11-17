@@ -1,0 +1,109 @@
+* {
+    font: 16px Arial,sans-serif;
+}
+
+:root {
+    --text-color: rgb(230, 230, 242);
+}
+
+body {
+    overflow: hidden;
+    user-select: none;
+    margin: 0px;
+}
+
+.background {
+    -webkit-app-region: no-drag;
+    margin: 5px;
+}
+
+svg {
+    margin: 5px;
+}
+
+.footer {
+    height: 4px;
+    clear: both;
+}
+
+div {
+    text-shadow: 0 0 4px rgba(0,0,0,0.2);
+}
+
+.container {
+    margin-right: 6px;
+    overflow-y: auto;
+    height: 350px;
+    -webkit-app-region: no-drag;
+}
+
+.titlebar {
+    margin: 6px;
+    font-size: 16px;
+    color: rgb(230, 230, 240);
+    text-shadow: 0 0 4px rgba(0,0,0,0.2);
+    -webkit-app-region: drag;
+    z-index: 10;
+
+    display: flex;
+    flex-direction: center;
+    align-items: center;
+}
+
+.item-color {
+    background: rgba(230, 230, 240, 0.5);
+    color: rgb(52, 52, 54);
+    transition: all 200ms linear 0;
+}
+
+.item-color:hover {
+    background: rgba(210, 210, 240, 0.5);
+    color: rgb(52, 52, 54);
+}
+
+.item {
+    min-width: 160px;
+    min-height: 30px;
+    margin: 6px;
+    border-radius: 1px;
+    box-shadow: 0 0 4px rgba(0,0,0,0.2);
+    -webkit-app-region: no-drag;
+}
+
+.plus-button {
+    width: 16px;
+    height: 16px;
+    margin-left: 6px;
+    background: url(plus_button.png) no-repeat;
+    background-size: 100% 100%;
+    transition: all 200ms linear 0;
+    -webkit-app-region: no-drag;
+}
+
+.plus-button:hover {
+    box-shadow: 0 0 4px rgba(0,0,0,0.2);
+    background: url(plus_button_hover.png) no-repeat;
+    background-size:100% 100%;
+}
+
+::-webkit-scrollbar { 
+    width: 8px; 
+    height: 8px; 
+    top: 6px;
+    bottom: 6px;
+    background-color: rgba(0,0,0,0.0);
+} 
+   
+::-webkit-scrollbar-track { 
+    background-color: rgba(0,0,0,0.0);
+} 
+   
+::-webkit-scrollbar-thumb { 
+    background-color: rgba(230, 230, 240, 0.5);
+    border-radius: 1px;
+    transition: all 200ms linear 0;
+}
+
+::-webkit-scrollbar-thumb:hover { 
+    background-color: rgba(210, 210, 240, 0.5);
+}
