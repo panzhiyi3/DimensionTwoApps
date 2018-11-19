@@ -76,9 +76,10 @@ svg {
 }
 
 .content-short {
-    margin: 0px 6px 0px 6px;
+    margin: 0px 20px 0px 6px;
     padding: 0px;
     line-height: 30px;
+    height: 30px;
     overflow: hidden;
     word-wrap: break-word;
     white-space: nowrap;
@@ -87,13 +88,15 @@ svg {
 
 .content-full {
     display: block;
-    height: 100%;
-    width: 100%;
+    height: 190px;
+    width: 85%;
+    padding: 6px 0px 0px 6px;
     word-wrap: break-word;
     outline: 0;
     border: none;
     resize: none;
     color: rgb(52, 52, 54);
+    text-shadow: 0 0 4px rgba(0,0,0,0.2);
     background: rgba(0,0,0,0.0);
 }
 
@@ -123,7 +126,6 @@ svg {
     right: 6px;
     background: url(del_button.png) no-repeat;
     background-size: 100% 100%;
-    /* transition: box-shadow 200ms linear; */
     -webkit-app-region: no-drag;
     visibility: hidden;
 }
@@ -135,7 +137,27 @@ svg {
 }
 
 .delete-button-expand {
-    top: -100px;
+    top: -170px;
+    right: -10px;
+}
+
+.collapse-button {
+    position: relative;
+    float: right;
+    width: 16px;
+    height: 16px;
+    top: -190px;
+    right: 6px;
+    background: url(collapse_button.png) no-repeat;
+    background-size: 100% 100%;
+    -webkit-app-region: no-drag;
+    visibility: hidden;
+}
+
+.collapse-button:hover {
+    background: url(collapse_button_hover.png) no-repeat;
+    background-size: 100% 100%;
+    box-shadow: 0 0 4px rgba(0,0,0,0.2);
 }
 
 ::-webkit-scrollbar { 
