@@ -1,7 +1,7 @@
 {
   "name": "dock",
   "version": "1.0.0",
-  "description": "dock for DimensionTwo",
+  "description": "Dock for DimensionTwo",
   "main": "main.js",
   "scripts": {
     "start": "electron .",

@@ -1,25 +1,16 @@
 {
-  "name": "electron-quick-start",
-  "version": "1.0.0",
-  "description": "A minimal Electron application",
-  "main": "main.js",
-  "scripts": {
-    "start": "electron ."
-  },
-  "repository": "https://github.com/electron/electron-quick-start",
-  "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
-  ],
-  "author": "GitHub",
-  "license": "CC0-1.0",
-  "devDependencies": {
-    "electron": "^2.0.0"
-  },
-  "dependencies": {
-    "d3": "^5.5.0"
+    "name": "systeminfo",
+    "version": "1.0.0",
+    "description": "SystemInfo for DimensionTwo",
+    "main": "main.js",
+    "scripts": {
+      "start": "electron ."
+    },
+    "keywords": [],
+    "author": "AeroRider",
+    "license": "MIT",
+    "devDependencies": {
+      "electron": "^2.0.13"
+    }
   }
-}
+  
