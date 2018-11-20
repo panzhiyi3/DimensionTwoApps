@@ -4,15 +4,17 @@
 
 :root {
     --text-color: rgb(230, 230, 240);
+    --text-color-dark: rgb(52, 52, 54);
     --item-color-hover: rgba(210, 210, 240, 0.3);
     --item-border: rgba(0, 0, 0, 0.4);
+    --menu-color: rgb(230, 230, 240);
+    --menu-color-hover: rgb(210, 210, 240);
 }
 
 body {
     overflow: hidden;
     user-select: none;
     margin: 0px;
-    /* -webkit-app-region: drag; */
 }
 
 .background {
@@ -20,17 +22,64 @@ body {
     flex-direction: column;
     flex-wrap: nowrap;
     justify-content: flex-start;
+    align-content: flex-start;
     height: 100%;
-    -webkit-app-region: no-drag;
     margin: 5px;
+    transition: all 200ms linear;
+    -webkit-app-region: no-drag;
 }
 
 .titlebar {
-    height: 30px;
-    padding: 6px 0px;
-    background: rgba(0, 0, 0, 0.4);
+    margin: 0px 4px 0px 4px;
+    height: 24px;
+    width: 0;
+    -webkit-app-region: no-drag;
+    transition: all 50ms linear;
+
+    display: flex;
+    justify-content: flex-start;
+    align-content: flex-start;
+}
+
+.titlebar-hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.titlebar-expand {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
     -webkit-app-region: drag;
 }
+
+.caption {
+    margin-left: 6px;
+    line-height: 24px;
+    color: rgba(230, 230, 240, 0.8);
+    cursor: default;
+    text-shadow: 0 0 4px rgba(0,0,0,0.2);
+    transition: all 50ms linear;
+    -webkit-app-region: no-drag;
+}
+
+.title-expand_btn {
+    color: rgba(230, 230, 240, 0.8);
+    margin-left: 12px;
+    height: 24px;
+    width: 24px;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 24px;
+    text-align: center;
+    cursor: pointer;
+    background: transparent;
+    -webkit-app-region: no-drag;
+    transition: all 50ms linear;
+}
+.title-expand_btn:hover {
+    text-shadow: 0 0 4px rgba(0,0,0,0.2);
+}
+
+/* Container */
 
 .container {
     display: flex;
@@ -61,6 +110,74 @@ body {
     border: 1px solid var(--item-border);
     box-shadow: 0 0 4px rgba(0,0,0,0.4),
         inset 0 0 2px rgba(255, 255, 255, 0.6);
+}
+
+
+/* Menu */
+.dropbtn {
+    color: rgba(230, 230, 240, 0.8);
+    margin-right: 6px;
+    height: 24px;
+    width: 24px;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 24px;
+    text-align: center;
+    cursor: pointer;
+    background: transparent;
+    -webkit-app-region: no-drag;
+    transition: all 50ms linear;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: var(--menu-color);
+    min-width: 80px;
+    box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.2);
+    transition: all 200ms linear;
+}
+
+.dropdown-content a {
+    color: var(--text-color-dark);
+    text-shadow: 0 0 4px rgba(0,0,0,0.2);
+    text-align: center;
+    height: 24px;
+    line-height: 24px;
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+    transition: all 200ms linear;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown-content a:hover {
+    background-color: var(--menu-color-hover);
+}
+
+.dropdown:hover .dropbtn {
+    text-shadow: 0 0 4px rgba(0,0,0,0.2);
+}
+
+/* Setting panel */
+
+.setting-panel {
+    position: absolute;
+    width: 400px;
+    height: 250px;
+    left: 0;
+    top: 0;
+    background: rgb(230, 230, 240);
+    box-shadow: 0 0 4px rgba(0,0,0,0.8);
 }
 
 
