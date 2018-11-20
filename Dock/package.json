@@ -15,10 +15,10 @@
   "devDependencies": {
     "electron": "^2.0.13",
     "electron-builder": "^20.36.2",
-    "electron-packager": "^12.2.0",
     "electron-rebuild": "^1.8.2"
   },
   "dependencies": {
+    "chokidar": "^2.0.4",
     "ffi": "^2.2.0"
   },
   "build": {

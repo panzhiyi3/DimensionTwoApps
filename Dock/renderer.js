@@ -1,9 +1,8 @@
-var ffi = require('ffi')
+let win = require('electron').remote.getCurrentWindow();
 
-var libfactorial = ffi.Library('./libfactorial', {
-  'factorial': [ 'uint64', [ 'int' ] ]
-})
-
-var output = libfactorial.factorial(parseInt(35))
-
-console.log('Your output: ' + output)
+window.addEventListener('mousemove', function(e) {
+  if (e.target === document.documentElement)
+    win.setIgnoreMouseEvents(true, {forward: true});
+  else
+    win.setIgnoreMouseEvents(false);
+});

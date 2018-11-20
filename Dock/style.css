@@ -1,9 +1,11 @@
 * {
-    font: 14px Arial,sans-serif;
+    font: 14px Arial,"Microsoft YaHei","Heiti SC",sans-serif;
 }
 
 :root {
-    --text-color: rgb(230, 230, 242);
+    --text-color: rgb(230, 230, 240);
+    --item-color-hover: rgba(210, 210, 240, 0.3);
+    --item-border: rgba(0, 0, 0, 0.4);
 }
 
 body {
@@ -14,118 +16,72 @@ body {
 }
 
 .background {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    height: 100%;
+    -webkit-app-region: no-drag;
+    margin: 5px;
+}
+
+.titlebar {
+    height: 30px;
+    padding: 6px 0px;
+    background: rgba(0, 0, 0, 0.4);
     -webkit-app-region: drag;
-    margin: 5px;
 }
 
-svg {
-    margin: 5px;
-}
-
-.footer {
-    height: 4px;
-    clear: both;
-}
-
-div {
-    text-shadow: 0 0 4px rgba(0,0,0,0.2);
-}
-
-.top_part {
-    margin-right: 20px;
+.container {
     display: flex;
-    justify-content: flex-end;
-    align-items: center;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-content: flex-start;
+    margin: 0px;
+    width: 100%;
+    height: 600px;
+    overflow: auto;
+    -webkit-app-region: no-drag;
 }
 
-/* Left part */
-
-.div_month {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-}
-
-.time {
-    text-align: right;
-    font-size: 60px;
-    font-weight: 600;
-    line-height: 0%;
-    color: var(--text-color);
-}
-
-.week {
-    text-align: right;
-    font-size: 24px;
-    line-height: 0%;
-    color: var(--text-color);
-}
-
-.month {
-    text-align: right;
-    font-size: 30px;
-    line-height: 0%;
-    color: var(--text-color);
-}
-
-.monthday {
-    text-align: right;
-    margin-left: 0.5em;
-    font-size: 36px;
-    line-height: 0%;
-    color: var(--text-color);
-}
-
-
-/* Clock part */
-.clock {
-    width: 80px;
-    height: 80px;
-    border: 3px solid var(--text-color);
-    border-radius: 100px;
-    float: left;
-    margin: 50px 50px;
-    box-shadow: 0 0 4px rgba(0,0,0,0.2);
-}
-
-#clock_hours {
-    width: 65px;
-    height: 3px;
-    margin: 40px 40px;
+.item {
+    margin: 4px;
+    height: 90px;
+    width: 76px;
     border-radius: 2px;
-    background: var(--text-color);
-    transform-origin: left bottom;
-    box-shadow: 0 0 4px rgba(0,0,0,0.2);
+    background: var(--item-color-hover);
+    border: 1px solid transparent;
+    text-shadow: 0 0 4px rgba(0,0,0,0.4);
+    transition: all 50ms linear;
 }
 
-#clock_minutes {
-    width: 85px;
-    height: 3px;
-    border-radius: 2px;
-    background: var(--text-color);
-    margin: -40px 40px;
-    transform-origin: left bottom;
-    transform: rotate(0deg);
-    box-shadow: 0 0 4px rgba(0,0,0,0.2);
+.item:hover {
+    background: var(--item-color-hover);
+    border: 1px solid var(--item-border);
+    box-shadow: 0 0 4px rgba(0,0,0,0.4),
+        inset 0 0 2px rgba(255, 255, 255, 0.6);
 }
 
-#clock_seconds {
-    width: 45px;
-    height: 3px;
-    background: var(--text-color);
-    margin: 40px 0px;
-    transform-origin: left bottom;
-    transform: rotate(0deg);
+
+::-webkit-scrollbar { 
+    width: 8px; 
+    height: 8px; 
+    top: 6px;
+    bottom: 6px;
+    background-color: rgba(0,0,0,0.0);
+} 
+   
+::-webkit-scrollbar-track { 
+    background-color: rgba(0,0,0,0.0);
+} 
+   
+::-webkit-scrollbar-thumb { 
+    background-color: rgba(230, 230, 240, 0.5);
+    border-radius: 1px;
+    transition: all 200ms linear;
 }
 
-.clock_trans {
-    transform: rotate(-90deg);
-}
-
-#clock_center {
-    width: 3px;
-    height: 3px;
-    border-radius: 2px;
-    background: var(--text-color);
-    margin: 37px 37px;
+::-webkit-scrollbar-thumb:hover { 
+    background-color: rgba(210, 210, 240, 0.5);
 }
