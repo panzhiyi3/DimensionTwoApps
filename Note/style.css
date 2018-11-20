@@ -1,9 +1,9 @@
 * {
-    font: 16px Arial,sans-serif;
+    font: 16px Arial,"Microsoft YaHei","Heiti SC",sans-serif;
 }
 
 :root {
-    --text-color: rgb(230, 230, 242);
+    --text-color: rgb(230, 230, 240);
 }
 
 body {
@@ -15,10 +15,6 @@ body {
 
 div {
     text-shadow: 0 0 4px rgba(0,0,0,0.2);
-}
-
-svg {
-    margin: 5px;
 }
 
 .background {
@@ -41,7 +37,7 @@ svg {
     margin: 0px 6px;
     font-size: 16px;
     border-radius: 1px;
-    color: rgb(230, 230, 240);
+    color: var(--text-color);
     text-shadow: 0 0 4px rgba(0,0,0,0.2);
     -webkit-app-region: drag;
     z-index: 10;
