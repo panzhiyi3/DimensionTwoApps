@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="sidebar.css">
+    <link rel="stylesheet" href="fontawesome/css/all.min.css">
+    <meta charset="UTF-8">
+    <title>Fold Desktop</title>
+</head>
+
+<body>
+    <div class="background">
+        <!-- <div class="titlebar">
+            <div class="caption">Dock</div>
+            <div style="flex: 1;"></div>
+            <div class="title-expand_btn">&gt;</div>
+            <div class="menu dropdown">
+                <div class="menu dropbtn">&#9776;</div>
+                <div class="menu dropdown-content">
+                    <a id="onMenuSettingClick">设置</a>
+                    <a id="onMenuCloseClick">关闭</a>
+                </div>
+            </div>
+        </div> -->
+        <div class="container">
+            <div class="item"></div>
+        </div>
+        <span class="sidebar-button">&#9776;</span>
+        <div id="sideBar" class="sidenav">
+            <a href="javascript:void(0)" class="sidebar-closebutton">&times;</a>
+            <a href="#">About</a>
+            <a href="#">Services</a>
+            <a href="#">Clients</a>
+            <a href="#">Contact</a>
+          </div>
+    </div>
+
+    <div class="setting-panel" style="display: none;">
+    </div>
+    <script>
+        require('./renderer.js')
+    </script>
+</body>
+
+</html>

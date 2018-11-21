@@ -1,5 +1,6 @@
 window.$ = window.jQuery = require("./jquery.min");
 let win = require("electron").remote.getCurrentWindow();
+let fs = require("fs");
 let chokidar = require("chokidar");
 let ffi = require("ffi");
 let ref = require("ref");
@@ -26,10 +27,16 @@ function init() {
     });
 
     window.onresize = function () {
+        $(".background").height(document.documentElement.clientHeight);
         $(".container").height(document.documentElement.clientHeight - $(".titlebar").height() - 10);
     }
 
+    $(".background").height(document.documentElement.clientHeight);
     $(".container").height(document.documentElement.clientHeight - $(".titlebar").height() - 10);
+
+    $(".sidebar-button").click(openSidebar);
+
+    $(".sidebar-closebutton").click(closeSidebar);
 
     $(".dropbtn").click(function (e) {
         e.stopPropagation();
@@ -79,7 +86,10 @@ function init() {
         });
     watcher.on("add", function (path) {
         console.log(path);
-    })
+    });
+
+    traversePath(paths[0]);
+    traversePath(paths[1]);
 }
 
 function getDesktopPath() {
@@ -130,4 +140,40 @@ function onMenuSettingClick(e) {
 
 function onMenuCloseClick(e) {
     e.stopPropagation();
+}
+
+function openSidebar() {
+    if(!$("#sideBar").hasClass("sidenav-expand")) {
+        $("#sideBar").addClass("sidenav-expand");
+    }
+}
+
+function closeSidebar() {
+    $("#sideBar").removeClass("sidenav-expand");
+}
+
+
+// get all files and folders
+function traversePath(filePath) {
+    fs.readdir(filePath, function(err, files) {
+        if(err) {
+            console.warn(err);
+            return null;
+        }
+        else {
+            files.forEach(function(filename) {
+                let thisFilePath = path.join(filePath, filename);
+                fs.stat(thisFilePath, function(eror, stats) {
+                    if(eror) {
+                        console.warn("fs.stat failed on " + thisFilePath);
+                    }
+                    else {
+                        let isFile = stats.isFile();
+                        let isDir = stats.isDirectory();
+                        console.log(thisFilePath);
+                    }
+                })
+            });
+        }
+    });
 }

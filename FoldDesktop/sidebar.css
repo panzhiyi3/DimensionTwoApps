@@ -1,0 +1,55 @@
+.sidebar-button {
+    font-family: "Lato", sans-serif;
+    font-size: 16px;
+    position: absolute;
+    float: right;
+    right: 6px;
+    color: rgba(230, 230, 240, 0.8);
+    text-shadow: 0 0 4px rgba(0,0,0,0.2);
+    cursor: pointer;
+}
+
+.sidebar-closebutton {
+    font-family: "Lato", sans-serif;
+    font-size: 16px;
+}
+
+.sidenav {
+    float: right;
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1;
+    right: 0;
+    /* top: 0;
+    left: 0; */
+    background-color: rgb(230, 230, 240);
+    overflow-x: hidden;
+    transition: 200ms;
+    padding-top: 60px;
+}
+
+.sidenav-expand {
+    width: 100px;
+}
+
+.sidenav a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
+}
+
+.sidenav a:hover {
+    color: #f1f1f1;
+}
+
+.sidenav .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+}
