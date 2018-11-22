@@ -1,5 +1,5 @@
-const { app, BrowserWindow } = require('electron');
-const { ipcMain } = require('electron');
+const electron  = require('electron');
+const { app, BrowserWindow, ipcMain} = electron;
 let fs = require("fs");
 
 let ffi = require("ffi");
@@ -18,7 +18,14 @@ let libDimensionDesk;
 //app.disableHardwareAcceleration(); // This will enable mouse click through
 
 function createWindow() {
-    mainWindow = new BrowserWindow({ width: 800, height: 800, resizable: true, maximizable: false, frame: false, transparent: true });
+    let display = electron.screen.getPrimaryDisplay();
+    mainWindow = new BrowserWindow({
+        x: display.workArea.x,
+        y: display.workArea.y,
+        width: display.workArea.width / 2,
+        height: display.workArea.height,
+        resizable: true, maximizable: false, frame: false, transparent: true
+    });
     let id = mainWindow.id;
 
     mainWindow.loadFile('index.html');
@@ -51,12 +58,13 @@ app.on('activate', function () {
 function init(mainWindow) {
     let currentPath = path.dirname(require.main.filename || process.mainModule.filename);
     
-    libDimensionDesk = ffi.Library(currentPath + "\\DimensionDeskHelper64", {
-        "GetCurrentDesktopPath": [ "int", ["char *", "int", "int *"] ],
-        "GetAllUsersDesktopPath": [ "int", ["char *", "int", "int *"] ]
-    });
+    // libDimensionDesk = ffi.Library(currentPath + "\\DimensionDeskHelper64", {
+    //     "GetCurrentDesktopPath": [ "int", ["char *", "int", "int *"] ],
+    //     "GetAllUsersDesktopPath": [ "int", ["char *", "int", "int *"] ]
+    // });
 
-    let paths = getDesktopPath();
+    //let paths = getDesktopPath();
+    let paths = ["V:\\usb"];
     if(!paths) {
         console.log("Error getting system desktop path, exit!");
         return;

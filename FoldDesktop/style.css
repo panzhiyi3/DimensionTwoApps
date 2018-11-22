@@ -6,6 +6,7 @@
     --text-color: rgb(230, 230, 240);
     --text-color-dark: rgb(52, 52, 54);
     --item-color-hover: rgba(210, 210, 240, 0.3);
+    --item-color-focus: rgba(210, 210, 240, 0.6);
     --item-border: rgba(0, 0, 0, 0.4);
     --menu-color: rgb(230, 230, 240);
     --menu-color-hover: rgb(210, 210, 240);
@@ -23,11 +24,15 @@ body {
     flex-wrap: nowrap;
     justify-content: flex-start;
     align-content: flex-start;
-    background: rgba(0,0,0,0.4);
     height: 100%;
     margin: 5px;
-    transition: all 200ms linear;
+    transition: all 100ms linear;
     -webkit-app-region: no-drag;
+}
+
+.background-hover {
+    background: rgba(0,0,0,0.4);
+    box-shadow: 0 0 4px rgba(0,0,0,0.4);
 }
 
 .titlebar {
@@ -103,7 +108,6 @@ body {
     height: 90px;
     width: 76px;
     border-radius: 2px;
-    background: var(--item-color-hover);
     border: 1px solid transparent;
     text-shadow: 0 0 4px rgba(0,0,0,0.4);
     transition: all 50ms linear;
@@ -111,6 +115,14 @@ body {
 
 .item:hover {
     background: var(--item-color-hover);
+    border: 1px solid var(--item-border);
+    box-shadow: 0 0 4px rgba(0,0,0,0.4),
+        inset 0 0 2px rgba(255, 255, 255, 0.6);
+}
+
+.item:focus {
+    outline: none;
+    background: var(--item-color-focus);
     border: 1px solid var(--item-border);
     box-shadow: 0 0 4px rgba(0,0,0,0.4),
         inset 0 0 2px rgba(255, 255, 255, 0.6);

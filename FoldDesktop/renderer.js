@@ -30,6 +30,10 @@ function init() {
 
     $(".background").height(document.documentElement.clientHeight - 11);
 
+    $(".side-hoverbar-transparent").mouseenter(mouseEnterHoverBar)
+
+    $(".side-hoverbar-transparent").mouseleave(mouseLeaveHoverBar);
+
     $(".sidebar-button").click(openSidebar);
 
     $(".sidebar-closebutton").click(closeSidebar);
@@ -69,6 +73,18 @@ function init() {
     $("#onMenuCloseClick").click(onMenuCloseClick);
 }
 
+function mouseEnterHoverBar() {
+    $(".background").addClass("background-hover");
+    $(this).css("opacity", "1.0");
+    $(".side-hoverbar").css("visibility", "visible");
+}
+
+function mouseLeaveHoverBar() {
+    $(".background").removeClass("background-hover");
+    $(this).css("opacity", "0.0");
+    $(".side-hoverbar").css("visibility", "hidden");
+}
+
 function onMenuSettingClick(e) {
     e.stopPropagation();
 }
@@ -96,7 +112,6 @@ function refreshFiles() {
     for (let i = 0; i < globalFileList.length; i++) {
         let elem = orgFileItemElem.clone();
         elem.children(".filename").text(globalFileList[i].name);
-        console.log(globalFileList[i].name);
 
         $(".container").append(elem);
     }

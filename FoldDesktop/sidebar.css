@@ -1,10 +1,35 @@
+:root {
+    --text-color: rgb(230, 230, 240);
+    --text-color-dark: rgb(52, 52, 54);
+    --background: rgba(230, 230, 240, 1.0);
+}
+
+.side-hoverbar-transparent {
+    position: absolute;
+    float: right;
+    right: 5px;
+    width: 24px;
+    height: 100%;
+    opacity: 0.0;
+    transition: all 100ms linear;
+}
+
+.side-hoverbar {
+    width: 100%;
+    height: 100%;
+    background: var(--background);
+    text-shadow: 0 0 4px rgba(0,0,0,0.2);
+    box-shadow: 0 0 4px rgba(0,0,0,0.2);
+    transition: all 100ms linear;
+    visibility: hidden;
+}
+
 .sidebar-button {
     font-family: "Lato", sans-serif;
     font-size: 16px;
-    position: absolute;
-    float: right;
-    right: 6px;
-    color: rgba(230, 230, 240, 0.8);
+    text-align: center;
+    margin: 0 auto;
+    color: var(--text-color-dark);
     text-shadow: 0 0 4px rgba(0,0,0,0.2);
     cursor: pointer;
 }
