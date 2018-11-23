@@ -11,7 +11,13 @@ let chokidar = require("chokidar");
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
-let libDimensionDesk;
+let currentPath = path.dirname(require.main.filename || process.mainModule.filename);
+    
+let libDimensionDesk = ffi.Library(currentPath + "\\DimensionDeskHelper64", {
+    "GetCurrentDesktopPath": [ "int", ["char *", "int", "int *" ] ],
+    "GetAllUsersDesktopPath": [ "int", ["char *", "int", "int *" ] ],
+    "GetFileIcon": [ "int", [ "string", "int", "int", "char *", "int", "int *"] ]
+});
 
 // https://github.com/electron/electron/blob/master/docs/api/frameless-window.md
 // https://github.com/electron/electron/issues/1335
@@ -56,13 +62,6 @@ app.on('activate', function () {
 })
 
 function init(mainWindow) {
-    let currentPath = path.dirname(require.main.filename || process.mainModule.filename);
-    
-    // libDimensionDesk = ffi.Library(currentPath + "\\DimensionDeskHelper64", {
-    //     "GetCurrentDesktopPath": [ "int", ["char *", "int", "int *"] ],
-    //     "GetAllUsersDesktopPath": [ "int", ["char *", "int", "int *"] ]
-    // });
-
     //let paths = getDesktopPath();
     let paths = ["V:\\usb"];
     if(!paths) {
@@ -86,6 +85,8 @@ function init(mainWindow) {
     }
 
     mainWindow.webContents.send('FileListReady', fileList);
+
+    retriveItemsIcon(fileList);
 }
 
 function getDesktopPath() {
@@ -104,7 +105,6 @@ function getDesktopPath() {
     }
     if(callret) {
         currentPath = ref.readCString(stringBuffer); // Dll returns utf8 string
-        console.log(currentPath);
     }
     else {
         return null;
@@ -121,7 +121,6 @@ function getDesktopPath() {
     }
     if(callret) {
         allUsersPath = ref.readCString(stringBuffer); // Dll returns utf8 string
-        console.log(allUsersPath);
     }
     else {
         return null;
@@ -153,9 +152,38 @@ function traversePath(filePath, fileList) {
                 f.path = thisFilePath;
                 f.name = fileName;
                 f.isDir = isDir;
+                f.isHidden = false;
+                f.icon = null;
                 fileList.push(f);
             }
         });
     }
     return true;
+}
+
+function retriveItemsIcon(fileList) {
+    for(let i = 0; i < fileList.length; i++) {
+        let thisPath = fileList[i].path;
+
+        let bufferLenth = 260 * 4;
+        let sizeNeed = ref.alloc("int");
+        let stringBuffer = new Buffer(bufferLenth).fill(0);
+        let callret = libDimensionDesk.GetFileIcon(thisPath, 2, i, stringBuffer, bufferLenth, sizeNeed);
+
+        if(callret == -1)
+        {
+            bufferLenth = sizeNeed.deref();
+            stringBuffer = new Buffer(bufferLenth).fill(0);
+            callret = libDimensionDesk.GetFileIcon(thisPath, 2, i, stringBuffer, bufferLenth, sizeNeed);
+        }
+        if(callret) {
+            icoPath = ref.readCString(stringBuffer); // Dll returns utf8 string
+            mainWindow.webContents.send('FileIconReady', {"path": thisPath, "icon": icoPath});
+        }
+        // app.getFileIcon(thisPath, {"size": "large"}, function(error, icon) {
+        //     if(!error) {
+        //         mainWindow.webContents.send('FileIconeady', {"path": thisPath, "icon": icon.toDataURL()});
+        //     }
+        // });
+    }
 }

@@ -3,13 +3,18 @@ let mainWin = require("electron").remote.getCurrentWindow();
 const {ipcRenderer} = require('electron');
 
 let globalFileList = [];
+let globalFileListMap = new Map();
 let orgFileItemElem = $(".item").clone();
 
 init();
 
 ipcRenderer.on('FileListReady', (event, fileList) => {
     onFileListReady(fileList);
-  });
+});
+
+ipcRenderer.on('FileIconReady', (event, iconInfo) => {
+    onFileIconReady(iconInfo);
+});
 
 function init() {
     $(".item").remove();
@@ -105,14 +110,38 @@ function closeSidebar() {
 
 function onFileListReady(list) {
     globalFileList = list;
+    globalFileListMap.clear();
+    for(let i = 0; i < globalFileList.length; i++) {
+        globalFileListMap.set(globalFileList[i].path, i);
+    }
     refreshFiles();
 }
 
 function refreshFiles() {
     for (let i = 0; i < globalFileList.length; i++) {
         let elem = orgFileItemElem.clone();
+        elem.attr("id", i);
         elem.children(".filename").text(globalFileList[i].name);
+        elem.dblclick(runFileItem);
 
         $(".container").append(elem);
+    }
+}
+
+function runFileItem() {
+    console.log(globalFileList[ $(this).attr("id") ].path);
+}
+
+function onFileIconReady(iconInfo) {
+    if(globalFileListMap.has(iconInfo.path)) {
+        let id = globalFileListMap.get(iconInfo.path);
+        let url = "file:///" + iconInfo.icon;
+        url = url.replace(/\\/g,"\/");
+        url = encodeURI(url);
+        globalFileList[id].icon = url;
+        $("#" + id).children(".fileicon").css("background-image", "url(" + url + ")");
+    }
+    else {
+        console.log("Error, file:" + iconInfo.path + " not belong to desktop");
     }
 }
