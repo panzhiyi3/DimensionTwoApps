@@ -1,6 +1,6 @@
 window.$ = window.jQuery = require("./jquery.min");
 let mainWin = require("electron").remote.getCurrentWindow();
-const {ipcRenderer} = require('electron');
+const {ipcRenderer} = require("electron");
 
 let globalFileList = [];
 let globalFileListMap = new Map();
@@ -135,11 +135,12 @@ function runFileItem() {
 function onFileIconReady(iconInfo) {
     if(globalFileListMap.has(iconInfo.path)) {
         let id = globalFileListMap.get(iconInfo.path);
-        let url = "file:///" + iconInfo.icon;
-        url = url.replace(/\\/g,"\/");
-        url = encodeURI(url);
-        globalFileList[id].icon = url;
-        $("#" + id).children(".fileicon").css("background-image", "url(" + url + ")");
+        //let url = "file:///" + iconInfo.icon;
+        //url = url.replace(/\\/g,"\/");
+        //url = encodeURI(url);
+        //globalFileList[id].icon = url;
+        //$("#" + id).children(".fileicon").css("background-image", "url(" + url + ")");
+        $("#" + id).children(".fileicon").css("background-image", "url(" + iconInfo.icon + ")");
     }
     else {
         console.log("Error, file:" + iconInfo.path + " not belong to desktop");

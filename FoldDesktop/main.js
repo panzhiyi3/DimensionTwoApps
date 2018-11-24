@@ -1,11 +1,12 @@
 const electron  = require('electron');
-const { app, BrowserWindow, ipcMain} = electron;
-let fs = require("fs");
+const { app, BrowserWindow, ipcMain, nativeImage } = electron;
+const fs = require("fs");
 
-let ffi = require("ffi");
-let ref = require("ref");
-let path = require("path");
-let chokidar = require("chokidar");
+const ffi = require("ffi");
+const ref = require("ref");
+const path = require("path");
+const chokidar = require("chokidar");
+const ICO = require("icojs");
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -14,9 +15,11 @@ let mainWindow;
 let currentPath = path.dirname(require.main.filename || process.mainModule.filename);
     
 let libDimensionDesk = ffi.Library(currentPath + "\\DimensionDeskHelper64", {
+    "Init": ["void", []],
+    "UnInit": ["void", []],
     "GetCurrentDesktopPath": [ "int", ["char *", "int", "int *" ] ],
     "GetAllUsersDesktopPath": [ "int", ["char *", "int", "int *" ] ],
-    "GetFileIcon": [ "int", [ "string", "int", "int", "char *", "int", "int *"] ]
+    "GetFileIconToBuffer": [ "int", [ "string", "int", "char *", "int", "int *"] ]
 });
 
 // https://github.com/electron/electron/blob/master/docs/api/frameless-window.md
@@ -50,6 +53,7 @@ function createWindow() {
 app.on('ready', createWindow);
 
 app.on('window-all-closed', function () {
+    libDimensionDesk.UnInit();
     if (process.platform !== 'darwin') {
         app.quit();
     }
@@ -62,8 +66,9 @@ app.on('activate', function () {
 })
 
 function init(mainWindow) {
-    //let paths = getDesktopPath();
-    let paths = ["V:\\usb"];
+    libDimensionDesk.Init();
+
+    let paths = getDesktopPath();
     if(!paths) {
         console.log("Error getting system desktop path, exit!");
         return;
@@ -161,29 +166,40 @@ function traversePath(filePath, fileList) {
     return true;
 }
 
+
+function parseComplete(err, thisPath, images) {
+    if (err) {
+        console.log("Parse ico file failed!");
+    }
+    else {
+        images.forEach(function (image, index) {
+            let img = nativeImage.createFromBuffer( Buffer.from(image.buffer) );
+            mainWindow.webContents.send('FileIconReady', {"path": thisPath, "icon": img.toDataURL()});
+        });
+    }
+}
+
 function retriveItemsIcon(fileList) {
     for(let i = 0; i < fileList.length; i++) {
         let thisPath = fileList[i].path;
 
-        let bufferLenth = 260 * 4;
-        let sizeNeed = ref.alloc("int");
-        let stringBuffer = new Buffer(bufferLenth).fill(0);
-        let callret = libDimensionDesk.GetFileIcon(thisPath, 2, i, stringBuffer, bufferLenth, sizeNeed);
+        let bufferLenth = 307200; // most icons (including 256*256) is less than 300kb
+        let bytesNeed = ref.alloc("int");
+        let imgBuffer = new Buffer(bufferLenth).fill(0);
+        let callret = libDimensionDesk.GetFileIconToBuffer(thisPath, 2, imgBuffer, bufferLenth, bytesNeed);
 
         if(callret == -1)
         {
             bufferLenth = sizeNeed.deref();
-            stringBuffer = new Buffer(bufferLenth).fill(0);
-            callret = libDimensionDesk.GetFileIcon(thisPath, 2, i, stringBuffer, bufferLenth, sizeNeed);
+            imgBuffer = new Buffer(bufferLenth).fill(0);
+            callret = libDimensionDesk.GetFileIconToBuffer(thisPath, 2, imgBuffer, bufferLenth, bytesNeed);
         }
         if(callret) {
-            icoPath = ref.readCString(stringBuffer); // Dll returns utf8 string
-            mainWindow.webContents.send('FileIconReady', {"path": thisPath, "icon": icoPath});
+            ICO.parse(imgBuffer, "image/png").then(function (images) {
+                parseComplete(null, thisPath, images);
+            }).catch(function (err) {
+                parseComplete(err);
+            });
         }
-        // app.getFileIcon(thisPath, {"size": "large"}, function(error, icon) {
-        //     if(!error) {
-        //         mainWindow.webContents.send('FileIconeady', {"path": thisPath, "icon": icon.toDataURL()});
-        //     }
-        // });
     }
 }
