@@ -27,6 +27,7 @@ body {
     align-content: flex-start;
     height: 100%;
     margin: 5px;
+    border-radius: 2px;
     transition: all 100ms linear;
     -webkit-app-region: no-drag;
 }
@@ -90,12 +91,14 @@ body {
 
 .filename {
     width: 100%;
+    padding: 0px 0px 3px 0px;
     align-self: center;
     text-align: center;
     background: transparent;
     color: rgb(255, 255, 255);
-    text-shadow: 0 0 4px rgb(0,0,0), 0 0 4px rgb(0,0,0), 0 0 4px rgb(0,0,0);
+    text-shadow: 0 1px 2px rgb(0,0,0), 0 1px 2px rgb(0,0,0), 0 1px 2px rgb(0,0,0);
     font-size: 12px;
+    line-height: 16px;
 
     user-select: none;
     cursor: default;
@@ -110,45 +113,6 @@ body {
     -webkit-box-orient: vertical;
     word-wrap: break-word;
     /* word-break: keep-all; */
-}
-
-/* Fold bar */
-
-.foldbar-transparent {
-    position: absolute;
-    float: right;
-    right: 0px;
-    top: 0px;
-    width: 24px;
-    height: 100px;
-    overflow: hidden;
-    opacity: 1.0;
-    transition: all 100ms linear;
-}
-
-.foldbar {
-    width: 100%;
-    height: 100%;
-    top: 0px;
-    background-image: linear-gradient(200deg, var(--bar-color), rgba(255, 255, 255, 0.0) 80%);
-    box-shadow: 0 0 4px rgba(0,0,0,0.2);
-    transition: all 100ms linear;
-    /* visibility: hidden; */
-}
-
-.foldbutton {
-    font-size: 16px;
-    text-align: center;
-    margin: 4px auto;
-    width: 100%;
-    color: var(--text-color-dark);
-    transition: all 100ms linear;
-    cursor: pointer;
-}
-
-.foldbutton:hover {
-    color: var(--text-color-dark-hover);
-    text-shadow: 0 0 4px rgba(0,0,0,0.2);
 }
 
 ::-webkit-scrollbar { 
