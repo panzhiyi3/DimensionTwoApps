@@ -1,6 +1,6 @@
 window.$ = window.jQuery = require("./jquery.min");
-let mainWin = require("electron").remote.getCurrentWindow();
-const {ipcRenderer} = require("electron");
+const mainWin = require("electron").remote.getCurrentWindow();
+const { ipcRenderer, shell } = require("electron");
 
 let globalFileList = [];
 let globalFileListMap = new Map();
@@ -18,8 +18,6 @@ ipcRenderer.on('FileIconReady', (event, iconInfo) => {
 
 function init() {
     $(".item").remove();
-
-    $(".titlebar").children().css("opacity", "0.0");
 
     // TODO, adjust element range
     window.addEventListener('mousemove', function (e) {
@@ -41,72 +39,62 @@ function init() {
 
     $(".sidebar-button").click(openSidebar);
 
-    $(".sidebar-closebutton").click(closeSidebar);
+    $("#sidebar-closebutton").click(closeSidebar);
 
-    $(".dropbtn").click(function (e) {
-        e.stopPropagation();
-    });
+    $("#sidebar-settingbutton").click(onSideBarSetting);
 
-    $(".caption").click(function(e) {
-        e.stopPropagation();
-    });
-
-    $(".titlebar").mouseenter(function () {
-        $(this).addClass("titlebar-hover");
-        $(this).children().css("opacity", "1.0");
-    });
-
-    $(".titlebar").mouseleave(function () {
-        if(!$(this).hasClass("titlebar-expand")) {
-            $(this).removeClass("titlebar-hover");
-            $(this).children().css("opacity", "0.0");
-        }
-    });
-
-    $(".titlebar").click(function () {
-        if ($(this).hasClass("titlebar-expand")) {
-            $(this).removeClass("titlebar-expand");
-            $(this).children(".title-expand_btn").text(">");
-        }
-        else {
-            $(this).addClass("titlebar-expand");
-            $(this).children(".title-expand_btn").text("<");
-        }
-    });
-
-    $("#onMenuSettingClick").click(onMenuSettingClick);
-    $("#onMenuCloseClick").click(onMenuCloseClick);
+    $("#sidebar-quitbutton").click(quit);
 }
 
 function mouseEnterHoverBar() {
-    $(".background").addClass("background-hover");
+    if(!$(".background").hasClass("background-hover")) {
+        $(".background").addClass("background-hover");
+    }
     $(this).css("opacity", "1.0");
     $(".side-hoverbar").css("visibility", "visible");
 }
 
 function mouseLeaveHoverBar() {
-    $(".background").removeClass("background-hover");
+    if(!$("#sideBar").hasClass("sidenav-expand")) { // side bar opened
+        $(".background").removeClass("background-hover");
+    }
     $(this).css("opacity", "0.0");
     $(".side-hoverbar").css("visibility", "hidden");
 }
 
-function onMenuSettingClick(e) {
-    e.stopPropagation();
-}
-
-function onMenuCloseClick(e) {
-    e.stopPropagation();
-}
-
 function openSidebar() {
     if(!$("#sideBar").hasClass("sidenav-expand")) {
+        $(".background").addClass("background-hover");
         $("#sideBar").addClass("sidenav-expand");
+        mainWin.setResizable(true);
+        $(".side-hoverbar-transparent").mouseleave();
     }
 }
 
 function closeSidebar() {
+    $(".background").removeClass("background-hover");
     $("#sideBar").removeClass("sidenav-expand");
+    mainWin.setResizable(false);
 }
+
+function onSideBarSetting(e) {
+    e.stopPropagation();
+    closeSidebar();
+    showSettingPanel();
+}
+
+function showSettingPanel() {
+    $(".popup-mask").fadeIn(100);
+    $(".setting-panel").fadeIn(100);
+    mainWin.setResizable(true);
+}
+
+function quit() {
+    if(confirm("确定要退出吗？")) {
+        mainWin.close();
+    }
+}
+
 
 function onFileListReady(list) {
     globalFileList = list;
@@ -129,7 +117,10 @@ function refreshFiles() {
 }
 
 function runFileItem() {
-    console.log(globalFileList[ $(this).attr("id") ].path);
+    let id = $(this).attr("id");
+    if(id >= 0 && id < globalFileList.length) {
+        shell.openItem(globalFileList[ $(this).attr("id") ].path);
+    }
 }
 
 function onFileIconReady(iconInfo) {

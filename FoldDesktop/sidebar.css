@@ -1,14 +1,16 @@
 :root {
     --text-color: rgb(230, 230, 240);
     --text-color-dark: rgb(52, 52, 54);
+    --text-color-dark-hover: rgb(100, 100, 106);
     --background: rgba(230, 230, 240, 1.0);
 }
 
 .side-hoverbar-transparent {
     position: absolute;
-    float: right;
-    right: 5px;
-    width: 24px;
+    float: left;
+    left: 0px;
+    top: 0px;
+    width: 20px;
     height: 100%;
     opacity: 0.0;
     transition: all 100ms linear;
@@ -17,64 +19,66 @@
 .side-hoverbar {
     width: 100%;
     height: 100%;
+    top: 0px;
     background: var(--background);
-    text-shadow: 0 0 4px rgba(0,0,0,0.2);
     box-shadow: 0 0 4px rgba(0,0,0,0.2);
     transition: all 100ms linear;
     visibility: hidden;
 }
 
 .sidebar-button {
-    font-family: "Lato", sans-serif;
     font-size: 16px;
     text-align: center;
-    margin: 0 auto;
+    margin: 4px auto;
+    width: 100%;
     color: var(--text-color-dark);
-    text-shadow: 0 0 4px rgba(0,0,0,0.2);
+    transition: all 100ms linear;
     cursor: pointer;
 }
 
-.sidebar-closebutton {
-    font-family: "Lato", sans-serif;
-    font-size: 16px;
+.sidebar-button:hover {
+    color: var(--text-color-dark-hover);
+    text-shadow: 0 0 4px rgba(0,0,0,0.2);
 }
 
 .sidenav {
-    float: right;
+    display: flex;
+    flex-direction: column;
+    float: left;
     height: 100%;
     width: 0;
     position: fixed;
     z-index: 1;
-    right: 0;
-    /* top: 0;
-    left: 0; */
+    left: 0;
     background-color: rgb(230, 230, 240);
     overflow-x: hidden;
-    transition: 200ms;
-    padding-top: 60px;
+    transition: all 100ms linear;
 }
 
 .sidenav-expand {
-    width: 100px;
+    width: 50px;
+    -webkit-app-region: drag;
 }
 
-.sidenav a {
-    padding: 8px 8px 8px 32px;
+.sidenav div {
+    margin: 8px auto;
+    width: 100%;
     text-decoration: none;
     font-size: 25px;
-    color: #818181;
+    color: var(--text-color-dark);
     display: block;
-    transition: 0.3s;
+    transition: all 100ms linear;
+
+    -webkit-app-region: no-drag;
 }
 
-.sidenav a:hover {
-    color: #f1f1f1;
+.sidenav div:hover {
+    color: var(--text-color-dark-hover);
+    text-shadow: 0 0 4px rgba(0,0,0,0.2);
+    cursor: pointer;
 }
 
-.sidenav .closebtn {
-    position: absolute;
-    top: 0;
-    right: 25px;
-    font-size: 36px;
-    margin-left: 50px;
+#sidebar-quitbutton {
+    align-self: flex-end;
+    margin-bottom: 16px;
 }

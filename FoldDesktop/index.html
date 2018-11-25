@@ -4,6 +4,7 @@
 <head>
     <link rel="stylesheet" type="text/css" href="style.css">
     <link rel="stylesheet" type="text/css" href="sidebar.css">
+    <link rel="stylesheet" type="text/css" href="settingPanel.css">
     <link rel="stylesheet" href="fontawesome/css/all.min.css">
     <meta charset="UTF-8">
     <title>Fold Desktop</title>
@@ -11,18 +12,6 @@
 
 <body>
     <div class="background">
-        <!-- <div class="titlebar">
-            <div class="caption">Dock</div>
-            <div style="flex: 1;"></div>
-            <div class="title-expand_btn">&gt;</div>
-            <div class="menu dropdown">
-                <div class="menu dropbtn">&#9776;</div>
-                <div class="menu dropdown-content">
-                    <a id="onMenuSettingClick">设置</a>
-                    <a id="onMenuCloseClick">关闭</a>
-                </div>
-            </div>
-        </div> -->
         <div class="container">
             <div tabindex="0" class="item">
                 <div class="fileicon"></div>
@@ -32,22 +21,41 @@
         </div>
         <div class="side-hoverbar-transparent">
             <div class="side-hoverbar">
-                <div class="sidebar-button">&#9776;</div>
+                <div class="sidebar-button fas fa-bars" title="菜单"></div>
             </div>
         </div>
         <div id="sideBar" class="sidenav">
-            <a href="javascript:void(0)" class="sidebar-closebutton">&times;</a>
-            <a href="#">About</a>
-            <a href="#">Services</a>
-            <a href="#">Clients</a>
-            <a href="#">Contact</a>
-          </div>
+            <div id="sidebar-closebutton" class="fas fa-fw fa-times" title="收起菜单"></div>
+            <div id="sidebar-settingbutton" class="fas fa-fw fa-cog" title="设置"></div>
+            <div style="flex: 1;"></div>
+            <div id="sidebar-quitbutton" class="fas fa-fw fa-power-off" title="退出"></div>
+        </div>
+
+        <div class="foldbar-transparent">
+            <div class="foldbar">
+                <div class="foldbutton fas fa-caret-left" title="折叠"></div>
+            </div>
+        </div>
     </div>
 
+    <div class="popup-mask" style="flex: 1; display: none;"></div>
     <div class="setting-panel" style="display: none;">
+        <div tabindex="0" class="setting-closebutton fas fa-fw fa-times"></div>
+
+        <div class="setting-caption">设置</div>
+        <div class="splitline"></div>
+        <div class="setting-group">
+            <input type="checkbox" class="regular-checkbox" id="ShowMyComputer"/><label for="ShowMyComputer"></label>
+            <label id="text" class="primary-text-color">显示我的电脑图标</label>
+        </div>
+        <div class="setting-group">
+            <input type="checkbox" class="regular-checkbox" id="ShowTrashBin"/><label for="ShowTrashBin"></label>
+            <label id="text" class="primary-text-color">显示回收站图标</label>
+        </div>
     </div>
     <script>
         require('./renderer.js')
+        require('./settingPanel.js')
     </script>
 </body>
 

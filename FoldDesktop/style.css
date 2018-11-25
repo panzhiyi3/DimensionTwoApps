@@ -5,17 +5,18 @@
 :root {
     --text-color: rgb(230, 230, 240);
     --text-color-dark: rgb(52, 52, 54);
+    --text-color-dark-hover: rgb(100, 100, 106);
     --item-color-hover: rgba(210, 210, 240, 0.3);
     --item-color-focus: rgba(210, 210, 240, 0.6);
     --item-border: rgba(0, 0, 0, 0.4);
-    --menu-color: rgb(230, 230, 240);
-    --menu-color-hover: rgb(210, 210, 240);
+    --bar-color: rgba(230, 230, 240, 1.0);
 }
 
 body {
     overflow: hidden;
     user-select: none;
     margin: 0px;
+    -webkit-app-region: no-drag;
 }
 
 .background {
@@ -33,56 +34,6 @@ body {
 .background-hover {
     background: rgba(0,0,0,0.4);
     box-shadow: 0 0 4px rgba(0,0,0,0.4);
-}
-
-.titlebar {
-    margin: 0px 4px 0px 4px;
-    height: 24px;
-    width: 0;
-    -webkit-app-region: no-drag;
-    transition: all 50ms linear;
-
-    display: flex;
-    justify-content: flex-start;
-    align-content: flex-start;
-}
-
-.titlebar-hover {
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.titlebar-expand {
-    width: 100%;
-    background: rgba(255, 255, 255, 0.1);
-    -webkit-app-region: drag;
-}
-
-.caption {
-    margin-left: 6px;
-    line-height: 24px;
-    color: rgba(230, 230, 240, 0.8);
-    cursor: default;
-    text-shadow: 0 0 4px rgba(0,0,0,0.2);
-    transition: all 50ms linear;
-    -webkit-app-region: no-drag;
-}
-
-.title-expand_btn {
-    color: rgba(230, 230, 240, 0.8);
-    margin-left: 12px;
-    height: 24px;
-    width: 24px;
-    font-size: 16px;
-    font-weight: 600;
-    line-height: 24px;
-    text-align: center;
-    cursor: pointer;
-    background: transparent;
-    -webkit-app-region: no-drag;
-    transition: all 50ms linear;
-}
-.title-expand_btn:hover {
-    text-shadow: 0 0 4px rgba(0,0,0,0.2);
 }
 
 /* Container */
@@ -161,74 +112,44 @@ body {
     /* word-break: keep-all; */
 }
 
+/* Fold bar */
 
-/* Menu */
-.dropbtn {
-    color: rgba(230, 230, 240, 0.8);
-    margin-right: 6px;
-    height: 24px;
+.foldbar-transparent {
+    position: absolute;
+    float: right;
+    right: 0px;
+    top: 0px;
     width: 24px;
+    height: 100px;
+    overflow: hidden;
+    opacity: 1.0;
+    transition: all 100ms linear;
+}
+
+.foldbar {
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    background-image: linear-gradient(200deg, var(--bar-color), rgba(255, 255, 255, 0.0) 80%);
+    box-shadow: 0 0 4px rgba(0,0,0,0.2);
+    transition: all 100ms linear;
+    /* visibility: hidden; */
+}
+
+.foldbutton {
     font-size: 16px;
-    font-weight: 600;
-    line-height: 24px;
     text-align: center;
-    cursor: pointer;
-    background: transparent;
-    -webkit-app-region: no-drag;
-    transition: all 50ms linear;
-}
-
-.dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-.dropdown-content {
-    display: none;
-    position: absolute;
-    right: 0;
-    background-color: var(--menu-color);
-    min-width: 80px;
-    box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.2);
-    transition: all 200ms linear;
-}
-
-.dropdown-content a {
+    margin: 4px auto;
+    width: 100%;
     color: var(--text-color-dark);
-    text-shadow: 0 0 4px rgba(0,0,0,0.2);
-    text-align: center;
-    height: 24px;
-    line-height: 24px;
-    text-decoration: none;
-    display: block;
+    transition: all 100ms linear;
     cursor: pointer;
-    transition: all 200ms linear;
 }
 
-.dropdown:hover .dropdown-content {
-    display: block;
-}
-
-.dropdown-content a:hover {
-    background-color: var(--menu-color-hover);
-}
-
-.dropdown:hover .dropbtn {
+.foldbutton:hover {
+    color: var(--text-color-dark-hover);
     text-shadow: 0 0 4px rgba(0,0,0,0.2);
 }
-
-/* Setting panel */
-
-.setting-panel {
-    position: absolute;
-    width: 400px;
-    height: 250px;
-    left: 0;
-    top: 0;
-    background: rgb(230, 230, 240);
-    box-shadow: 0 0 4px rgba(0,0,0,0.8);
-}
-
 
 ::-webkit-scrollbar { 
     width: 8px; 
