@@ -24,18 +24,26 @@ let libDimensionDesk = ffi.Library(currentPath + "\\DimensionDeskHelper64", {
 
 // https://github.com/electron/electron/blob/master/docs/api/frameless-window.md
 // https://github.com/electron/electron/issues/1335
-//app.disableHardwareAcceleration(); // This will enable mouse click through
+app.disableHardwareAcceleration(); // This will enable mouse click through
 
 function createWindow() {
     let display = electron.screen.getPrimaryDisplay();
     mainWindow = new BrowserWindow({
-        x: display.workArea.x,
+        title: "Fold Desktop",
+
+        // Minus 5,for there is a boder frame on the window, and cannot be remove, so skip 5px for border
+        // the window border don't generate mouse event, it made "hoverbar" useless
+        x: display.workArea.x - 5,
         y: display.workArea.y,
         width: display.workArea.width / 2,
         height: display.workArea.height,
-        resizable: true, maximizable: false, frame: false, transparent: true
+        resizable: false,
+        maximizable: false,
+        minimizable: false,
+        frame: false,
+        thickFrame: false,
+        transparent: true
     });
-    let id = mainWindow.id;
 
     mainWindow.loadFile('index.html');
 
