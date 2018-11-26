@@ -1,4 +1,6 @@
 window.$ = window.jQuery = require("./jquery.min");
+const ElectronStore = require('electron-store');
+const electronStore = new ElectronStore();
 
 let nextNoteId = 0;
 let arrayNotes = [];
@@ -9,16 +11,16 @@ $(".item").detach();
 init();
 
 function init() {
-    if(localStorage.getItem("arrayNotes")) {
-        arrayNotes = JSON.parse("[" + localStorage.getItem("arrayNotes") + "]");
+    if(electronStore.get("arrayNotes")) {
+        arrayNotes = JSON.parse("[" + electronStore.get("arrayNotes") + "]");
 
         for(let i = 0; i < arrayNotes.length; i++) {
-            if(arrayNotes[i] > nextNoteId) {
+            if(arrayNotes[i] >= nextNoteId) {
                 nextNoteId = arrayNotes[i] + 1;
             }
 
             addNote(arrayNotes[i]);
-            setNoteContent(arrayNotes[i], localStorage.getItem("" + arrayNotes[i]));
+            setNoteContent(arrayNotes[i], electronStore.get("" + arrayNotes[i]));
         }
     }
 }
@@ -68,7 +70,7 @@ function addNote(id) {
     });
 
     item.children(".content-full").blur(function() {
-        localStorage.setItem("" + $(this).parent().attr("id"), $(this).val());
+        electronStore.set("" + $(this).parent().attr("id"), $(this).val());
         $(this).parent().children(".content-short").text( $(this).val() );
     });
 }
@@ -85,10 +87,10 @@ function delNote(id) {
     let idx = arrayNotes.indexOf(id);
     if(idx > -1) {
         arrayNotes.splice(idx, 1);
-        localStorage.setItem("arrayNotes", arrayNotes.toString());
+        electronStore.set("arrayNotes", arrayNotes.toString());
     }
 
-    localStorage.removeItem("" + id);
+    electronStore.delete("" + id);
     $("#" + id).detach();
 }
 
@@ -98,8 +100,8 @@ $(".add-button").click(function (e) {
 
     arrayNotes.push(thisId);
 
-    localStorage.setItem("arrayNotes", arrayNotes.toString());
-    localStorage.setItem("" + thisId, "");
+    electronStore.set("arrayNotes", arrayNotes.toString());
+    electronStore.set("" + thisId, "");
 
     addNote(thisId);
 });
