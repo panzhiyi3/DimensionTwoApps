@@ -1,10 +1,10 @@
 const electron  = require('electron');
 const { app, BrowserWindow, ipcMain, nativeImage } = electron;
 const fs = require("fs");
+const Path = require("path");
 
 const ffi = require("ffi");
 const ref = require("ref");
-const path = require("path");
 const chokidar = require("chokidar");
 const ICO = require("icojs");
 
@@ -12,7 +12,7 @@ const ICO = require("icojs");
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
-let currentPath = path.dirname(require.main.filename || process.mainModule.filename);
+let currentPath = Path.dirname(require.main.filename || process.mainModule.filename);
     
 let libDimensionDesk = ffi.Library(currentPath + "\\DimensionDeskHelper64", {
     "Init": ["void", []],
@@ -24,7 +24,7 @@ let libDimensionDesk = ffi.Library(currentPath + "\\DimensionDeskHelper64", {
 
 // https://github.com/electron/electron/blob/master/docs/api/frameless-window.md
 // https://github.com/electron/electron/issues/1335
-app.disableHardwareAcceleration(); // This will enable mouse click through
+//app.disableHardwareAcceleration(); // This will enable mouse click through
 
 function createWindow() {
     let display = electron.screen.getPrimaryDisplay();
@@ -82,15 +82,6 @@ function init(mainWindow) {
         return;
     }
 
-    var watcher = chokidar.watch(paths,
-        {
-            ignoreInitial: true,
-            depth: 0
-        });
-    watcher.on("add", function (path) {
-        console.log(path);
-    });
-
     let fileList = [];
 
     for(let i = 0; i < paths.length; i++) {
@@ -98,6 +89,37 @@ function init(mainWindow) {
     }
 
     mainWindow.webContents.send('FileListReady', fileList);
+
+    ipcMain.on("GetFileIcon", (event, file) => {
+        onGetFileIcon(event, file);
+    });
+
+    var watcher = chokidar.watch(paths,
+        {
+            ignoreInitial: true,
+            depth: 0
+        });
+    watcher.on("add", function (path) {
+        let file = getOneFileInfo(Path.basename(path), path);
+        mainWindow.webContents.send('FileAdd', JSON.stringify(file));
+    })
+    .on("change", function (path) {
+        let file = getOneFileInfo(Path.basename(path), path);
+        mainWindow.webContents.send('FileModified', JSON.stringify(file));
+    })
+    .on("unlink", function (path) {
+        mainWindow.webContents.send('FileDel', path);
+    })
+    .on("addDir", function (path) {
+        let file = getOneFileInfo(Path.basename(path), path);
+        mainWindow.webContents.send('DirectoryAdd', JSON.stringify(file));
+    })
+    .on("unlinkDir", function (path) {
+        mainWindow.webContents.send('DirectoryDel', path);
+    })
+    .on("error", function (error) {
+        mainWindow.webContents.send('WatcherError', error);
+    });
 
     retriveItemsIcon(fileList);
 }
@@ -151,27 +173,34 @@ function traversePath(filePath, fileList) {
     }
     else {
         files.forEach(function (fileName) {
-            let thisFilePath = path.join(filePath, fileName);
-            let stats = fs.statSync(thisFilePath);
-
-            if (!stats) {
-                console.warn("fs.statSync failed on " + thisFilePath);
-            }
-            else {
-                let isFile = stats.isFile();
-                let isDir = stats.isDirectory();
-
-                let f = new Object();
-                f.path = thisFilePath;
-                f.name = fileName;
-                f.isDir = isDir;
-                f.isHidden = false;
-                f.icon = null;
+            let thisFilePath = Path.join(filePath, fileName);
+            let f = getOneFileInfo(fileName, thisFilePath);
+            if(f) {
                 fileList.push(f);
             }
         });
     }
     return true;
+}
+
+function getOneFileInfo(fileName, filePath) {
+    let stats = fs.statSync(filePath);
+
+    if (!stats) {
+        console.warn("fs.statSync failed on " + filePath);
+        return null;
+    }
+    else {
+        let isDir = stats.isDirectory();
+
+        let f = new Object();
+        f.path = filePath;
+        f.name = fileName;
+        f.isDir = isDir;
+        f.isHidden = false;
+        f.icon = null;
+        return f;
+    }
 }
 
 
@@ -190,24 +219,38 @@ function parseComplete(err, thisPath, images) {
 function retriveItemsIcon(fileList) {
     for(let i = 0; i < fileList.length; i++) {
         let thisPath = fileList[i].path;
+        GetFileIcon(thisPath);
+    }
+}
 
-        let bufferLenth = 307200; // most icons (including 256*256) is less than 300kb
-        let bytesNeed = ref.alloc("int");
-        let imgBuffer = new Buffer(bufferLenth).fill(0);
-        let callret = libDimensionDesk.GetFileIconToBuffer(thisPath, 2, imgBuffer, bufferLenth, bytesNeed);
+function onGetFileIcon(event, str) {
+    try {
+        let file = eval('(' + str + ')');
+        if(file.path) {
+            GetFileIcon(file.path);
+        }
+    }
+    catch(err) {
+        console.log(err);
+    }
+}
 
-        if(callret == -1)
-        {
-            bufferLenth = sizeNeed.deref();
-            imgBuffer = new Buffer(bufferLenth).fill(0);
-            callret = libDimensionDesk.GetFileIconToBuffer(thisPath, 2, imgBuffer, bufferLenth, bytesNeed);
-        }
-        if(callret) {
-            ICO.parse(imgBuffer, "image/png").then(function (images) {
-                parseComplete(null, thisPath, images);
-            }).catch(function (err) {
-                parseComplete(err);
-            });
-        }
+function GetFileIcon(filePath) {
+    let bufferLenth = 307200; // most icons (including 256*256) is less than 300kb
+    let bytesNeed = ref.alloc("int");
+    let imgBuffer = new Buffer(bufferLenth).fill(0);
+    let callret = libDimensionDesk.GetFileIconToBuffer(filePath, 2, imgBuffer, bufferLenth, bytesNeed);
+
+    if (callret == -1) {
+        bufferLenth = sizeNeed.deref();
+        imgBuffer = new Buffer(bufferLenth).fill(0);
+        callret = libDimensionDesk.GetFileIconToBuffer(filePath, 2, imgBuffer, bufferLenth, bytesNeed);
+    }
+    if (callret) {
+        ICO.parse(imgBuffer, "image/png").then(function (images) {
+            parseComplete(null, filePath, images);
+        }).catch(function (err) {
+            parseComplete(err);
+        });
     }
 }

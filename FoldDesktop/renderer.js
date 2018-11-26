@@ -10,12 +10,36 @@ let isFold = false;
 
 init();
 
+ipcRenderer.on('log', (event, log) => {
+    console.log(log);
+});
+
 ipcRenderer.on('FileListReady', (event, fileList) => {
     onFileListReady(fileList);
 });
 
 ipcRenderer.on('FileIconReady', (event, iconInfo) => {
     onFileIconReady(iconInfo);
+});
+
+ipcRenderer.on('FileAdd', (event, file) => {
+    onFileAdd(file);
+});
+
+ipcRenderer.on('FileModified', (event, str) => {
+    onFileModified(str);
+});
+
+ipcRenderer.on('FileDel', (event, filePath) => {
+    onFileDel(filePath);
+});
+
+ipcRenderer.on('DirectoryAdd', (event, file) => {
+    onFileAdd(file);
+});
+
+ipcRenderer.on('DirectoryDel', (event, filePath) => {
+    onFileDel(filePath);
 });
 
 function init() {
@@ -147,11 +171,7 @@ function onFileListReady(list) {
 
 function refreshFiles() {
     for (let i = 0; i < globalFileList.length; i++) {
-        let elem = orgFileItemElem.clone();
-        elem.attr("id", i);
-        elem.children(".filename").text(globalFileList[i].name);
-        elem.dblclick(runFileItem);
-        $(".container").append(elem);
+        addFileElement(i);
     }
 }
 
@@ -165,14 +185,62 @@ function runFileItem() {
 function onFileIconReady(iconInfo) {
     if(globalFileListMap.has(iconInfo.path)) {
         let id = globalFileListMap.get(iconInfo.path);
-        //let url = "file:///" + iconInfo.icon;
-        //url = url.replace(/\\/g,"\/");
-        //url = encodeURI(url);
-        //globalFileList[id].icon = url;
-        //$("#" + id).children(".fileicon").css("background-image", "url(" + url + ")");
-        $("#" + id).children(".fileicon").css("background-image", "url(" + iconInfo.icon + ")");
+        $("#" + id).children(".fileicon").children(".img-fileicon").attr("src", iconInfo.icon);
     }
     else {
         console.log("Error, file:" + iconInfo.path + " not belong to desktop");
+    }
+}
+
+function onFileAdd(str) {
+    try {
+        let file = eval('(' + str + ')'); //Use eval instead of JSON.parse, bypass path backslash escape character problem
+        globalFileList.push(file);
+        globalFileListMap.set(file.path, globalFileList.length - 1);
+
+        addFileElement(globalFileList.length - 1);
+
+        ipcRenderer.send("GetFileIcon", JSON.stringify({"path": file.path}));
+    }
+    catch(err) {
+        console.log(err);
+    }
+}
+
+function addFileElement(id) {
+    let elem = orgFileItemElem.clone();
+    elem.attr("id", id);
+    elem.children(".filename").text(globalFileList[id].name);
+    elem.children(".filename").attr("title", globalFileList[id].name);
+    elem.dblclick(runFileItem);
+    $(".container").append(elem);
+}
+
+function onFileModified(str) {
+    try {
+        let file = eval('(' + str + ')');
+        if(globalFileListMap.get(file.path)) {
+            let id = globalFileListMap.get(file.path);
+            globalFileList[id] = file;
+
+            ipcRenderer.send("GetFileIcon", JSON.stringify({"path": file.path}));
+        }
+    }
+    catch(err) {
+        console.log(err);
+    }
+}
+
+function onFileDel(filePath) {
+    try {
+        if(globalFileListMap.get(filePath)) {
+            let id = globalFileListMap.get(filePath);
+            globalFileList[id] = new Object(); // Don't delete now, or we have to rearrange all file id
+            globalFileListMap.delete(filePath);
+            $("#" + id).remove();
+        }
+    }
+    catch(err) {
+        console.log(err);
     }
 }
