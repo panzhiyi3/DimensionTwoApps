@@ -124,13 +124,13 @@ function init(mainWindow) {
         mainWindow.webContents.send('WatcherError', error);
     });
 
-    refreshFileShowMode();
-
     refreshFiles();
 }
 
 function refreshFiles() {
     let fileList = [];
+
+    refreshFileShowMode();
 
     for(let i = 0; i < watchingPaths.length; i++) {
         traversePath(watchingPaths[i], fileList);

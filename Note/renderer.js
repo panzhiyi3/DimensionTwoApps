@@ -1,5 +1,5 @@
 window.$ = window.jQuery = require("./jquery.min");
-const ElectronStore = require('electron-store');
+const ElectronStore = require("electron-store");
 const electronStore = new ElectronStore();
 
 let nextNoteId = 0;

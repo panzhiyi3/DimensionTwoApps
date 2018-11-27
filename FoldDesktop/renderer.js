@@ -2,6 +2,7 @@ window.$ = window.jQuery = require("./jquery.min");
 const mainWin = require("electron").remote.getCurrentWindow();
 const { ipcRenderer, shell } = require("electron");
 const Path = require("path");
+const SettingPanel = require("./settingPanel");
 
 let globalFileList = [];
 let globalFileListMap = new Map();
@@ -11,6 +12,15 @@ let isFold = false;
 let isShowHiddenFiles = true;
 let isShowFileExtName = true;
 let timerIdRefresh = 0;
+
+let SORT_TYPE = {
+    Name: 0,
+    Size: 1,
+    Type: 2,
+    ModTime: 3,
+};
+
+let sortType = SORT_TYPE.Name;
 
 init();
 
@@ -76,6 +86,8 @@ function init() {
     $(document).keydown((event) => {
         onKeyDown(event);
     });
+
+    SettingPanel.init();
 }
 
 function mouseEnterHoverBar() {
@@ -136,13 +148,7 @@ function foldOrExpand() {
 function onSideBarSetting(e) {
     e.stopPropagation();
     closeSidebar();
-    showSettingPanel();
-}
-
-function showSettingPanel() {
-    $(".popup-mask").fadeIn(100);
-    $(".setting-panel").fadeIn(100);
-    mainWin.setResizable(true);
+    SettingPanel.show();
 }
 
 function quit() {
@@ -185,15 +191,44 @@ function onFileListReady(list) {
     $(".container").empty();
     globalFileList = list;
     globalFileListMap.clear();
+    addSystemIcons();
+    sortFileList();
     for(let i = 0; i < globalFileList.length; i++) {
         globalFileListMap.set(globalFileList[i].path, i);
     }
-    refreshFiles();
+    refreshFileElements();
 }
 
-function refreshFiles() {
+function refreshFileElements() {
     for (let i = 0; i < globalFileList.length; i++) {
         addFileElement(i);
+    }
+}
+
+function addSystemIcons() {
+    if(SettingPanel.isShowMyComputer()) {
+        file = {
+            path: "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}",
+            name: "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}",
+            isDir: false,
+            isHidden: false,
+            icon: null
+        };
+        globalFileList.push(file);
+
+        ipcRenderer.send("GetFileIcon", JSON.stringify({"path": file.path}));
+    }
+    if(SettingPanel.isShowRecycleBin()) {
+        file = {
+            path: "::{645FF040-5081-101B-9F08-00AA002F954E}",
+            name: "::{645FF040-5081-101B-9F08-00AA002F954E}",
+            isDir: false,
+            isHidden: false,
+            icon: null
+        };
+        globalFileList.push(file);
+
+        ipcRenderer.send("GetFileIcon", JSON.stringify({"path": file.path}));
     }
 }
 
@@ -237,6 +272,73 @@ function onFileAdd(str) {
     }
 }
 
+function prefixInteger(num, length) {
+    return (Array(length).join('0') + num).slice(-length);
+}
+
+function dateToDisplayString(date) {
+    let text = date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate() + " ";
+    text += prefixInteger(date.getHours(), 2) + ":" + prefixInteger(date.getMinutes(), 2);
+    return text;
+}
+
+function sizeToDisplayText(size) {
+    let text = "";
+    let s = size / 1024 / 1024 / 1024;
+    if(s > 1) {
+        if(s >= 100) {
+            return s.toFixed(0) + " GB";
+        }
+        else {
+            return s.toFixed(2) + " GB";
+        }
+    }
+    s = size / 1024 / 1024;
+    if(s > 1) {
+        if(s >= 100) {
+            return s.toFixed(0) + " MB";
+        }
+        else {
+            return s.toFixed(2) + " MB";
+        }
+    }
+    s = size / 1024;
+    if(s > 1) {
+        if(s >= 100) {
+            return s.toFixed(0) + " KB";
+        }
+        else {
+            return s.toFixed(2) + " KB";
+        }
+    }
+
+    s = size;
+    return s.toFixed(2) + " 字节";
+}
+
+function getTooltipText(f) {
+    let tooltip = f.name;
+    if(!f.isDir) {
+        let ext = Path.extname(f.name);
+        if(ext.search(".") == 0) {
+            ext = ext.slice(1);
+        }
+        tooltip += "\r\n项目类型：" + ext + " 文件";
+    }
+    if(f.mtime) {
+        let date = new Date(f.mtime);
+        tooltip += "\r\n修改日期：" + dateToDisplayString(date);
+    }
+    else if(f.birthtime) {
+        let date = newDate(f.birthtime);
+        tooltip += "\r\n创建日期：" + dateToDisplayString(date);
+    }
+    if(f.size) {
+        tooltip += "\r\n大小：" + sizeToDisplayText(f.size);
+    }
+    return tooltip;
+}
+
 function addFileElement(id) {
     let f = globalFileList[id];
 
@@ -249,42 +351,39 @@ function addFileElement(id) {
     let elem = orgFileItemElem.clone();
     elem.attr("id", id);
 
-    if(f.isDir) {
-        elem.children(".filename").text(f.name);
+    if(f.name.search("::") == 0) { // Special system icons, e.g.Computer("::{20D04FE0-3AEA-1069-A2D8-08002B30309D}")
+        if(f.name == "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}") {
+            elem.children(".filename").text("计算机");
+        }
+        else if(f.name == "::{645FF040-5081-101B-9F08-00AA002F954E}") {
+            elem.children(".filename").text("回收站");
+        }
     }
-    else {
-        if(isShowFileExtName) {
+    else {    
+        if(f.isDir) {
             elem.children(".filename").text(f.name);
         }
         else {
-            try {
-                let withoutExt = Path.basename(f.name, Path.extname(f.name));
-                elem.children(".filename").text(withoutExt);
-            }
-            catch(err) {
+            if(isShowFileExtName) {
                 elem.children(".filename").text(f.name);
             }
+            else {
+                try {
+                    let withoutExt = Path.basename(f.name, Path.extname(f.name));
+                    elem.children(".filename").text(withoutExt);
+                }
+                catch(err) {
+                    elem.children(".filename").text(f.name);
+                }
+            }
         }
+    
+        if(f.isHidden) {
+            elem.children(".fileicon").css("opacity", "0.5");
+        }
+    
+        elem.attr("title", getTooltipText(f));
     }
-
-    if(f.isHidden) {
-        elem.children(".fileicon").css("opacity", "0.5");
-    }
-
-    let tooltip = f.name;
-    if(!f.isDir) {
-        tooltip += "\r\n项目类型：" + Path.extname(f.name) + " 文件";
-    }
-    if(f.mtime) {
-        tooltip += "\r\n修改时间：" + f.mtime;
-    }
-    else if(f.birthtime) {
-        tooltip += "\r\n创建时间：" + f.birthtime;
-    }
-    if(f.size) {
-        tooltip += "\r\n大小：" + (f.size / 1024) + "KB";
-    }
-    elem.attr("title", tooltip);
 
     elem.dblclick(runFileItem);
     elem.mouseup(onFileMouseUp);
@@ -318,4 +417,105 @@ function onFileDel(filePath) {
     catch(err) {
         console.log(err);
     }
+}
+
+function sortFileList() {
+    switch(sortType) {
+        case SORT_TYPE.Name:
+            globalFileList.sort(compareName);
+            break;
+        case SORT_TYPE.Size:
+            globalFileList.sort(compareSize);
+            break;
+        case SORT_TYPE.Type:
+            globalFileList.sort(compareType);
+            break;
+        case SORT_TYPE.ModTime:
+            //globalFileList.sort(compareModTime);
+            break;
+    }
+}
+
+function compareCommon(a, b) {
+    let isASpecialFile = a.name.search("::") == 0;
+    let isBSpecialFile = b.name.search("::") == 0;
+
+    if(isASpecialFile) {
+        if(!isBSpecialFile) {
+            return -1;
+        }
+    }
+    else if(isBSpecialFile) {
+        if(!isASpecialFile) {
+            return 1;
+        }
+    }
+
+    if(a.isDir) {
+        if(!b.isDir) {
+            return -1;
+        }
+    }
+    else if(b.isDir) {
+        if(!a.isDir) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+function compareName(a, b) {
+    if(a.name == null || b.name == null) {
+        return 0;
+    }
+    let ret = compareCommon(a, b);
+    if(ret != 0) {
+        return ret;
+    }
+    return a.name.localeCompare(b.name);
+}
+
+function compareSize(a, b) {
+    if(a.name == null || b.name == null) {
+        return 0;
+    }
+    if(a.size == null || b.size == null) {
+        return 0;
+    }
+    let ret = compareCommon(a, b);
+    if(ret != 0) {
+        return ret;
+    }
+
+    if(a.size < b.size) {
+        return -1;
+    } else if(a.size > b.size) {
+        return 1;
+    }
+    else {
+        return a.name.localeCompare(b.name);
+    }
+}
+
+function compareType(a, b) {
+    if(a.name == null || b.name == null) {
+        return 0;
+    }
+
+    let aExt = Path.extname(a.name);
+    let bExt = Path.extname(a.name);
+
+    let ret = compareCommon(a, b);
+    if(ret != 0) {
+        return ret;
+    }
+
+    ret = aExt.localeCompare(bExt);
+    if(ret != 0) {
+        return ret;
+    }
+    return a.name.localeCompare(b.name);
+}
+
+function compareModTime(a, b) {
 }
