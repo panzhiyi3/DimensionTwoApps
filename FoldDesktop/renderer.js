@@ -1,69 +1,57 @@
 window.$ = window.jQuery = require("./jquery.min");
 const mainWin = require("electron").remote.getCurrentWindow();
 const { ipcRenderer, shell } = require("electron");
+const Path = require("path");
 
 let globalFileList = [];
 let globalFileListMap = new Map();
 let orgFileItemElem = $(".item").clone();
 
 let isFold = false;
+let isShowHiddenFiles = true;
+let isShowFileExtName = true;
+let timerIdRefresh = 0;
 
 init();
 
-ipcRenderer.on('log', (event, log) => {
+ipcRenderer.on("log", (event, log) => {
     console.log(log);
 });
 
-ipcRenderer.on('FileListReady', (event, fileList) => {
+ipcRenderer.on("RefreshFileShowMode", (event, json) => {
+    refreshFileShowMode(json);
+});
+
+ipcRenderer.on("FileListReady", (event, fileList) => {
     onFileListReady(fileList);
 });
 
-ipcRenderer.on('FileIconReady', (event, iconInfo) => {
+ipcRenderer.on("FileIconReady", (event, iconInfo) => {
     onFileIconReady(iconInfo);
 });
 
-ipcRenderer.on('FileAdd', (event, file) => {
+ipcRenderer.on("FileAdd", (event, file) => {
     onFileAdd(file);
 });
 
-ipcRenderer.on('FileModified', (event, str) => {
+ipcRenderer.on("FileModified", (event, str) => {
     onFileModified(str);
 });
 
-ipcRenderer.on('FileDel', (event, filePath) => {
+ipcRenderer.on("FileDel", (event, filePath) => {
     onFileDel(filePath);
 });
 
-ipcRenderer.on('DirectoryAdd', (event, file) => {
+ipcRenderer.on("DirectoryAdd", (event, file) => {
     onFileAdd(file);
 });
 
-ipcRenderer.on('DirectoryDel', (event, filePath) => {
+ipcRenderer.on("DirectoryDel", (event, filePath) => {
     onFileDel(filePath);
 });
 
 function init() {
     $(".item").remove();
-
-    // $(".background").mouseover(function (e) {
-    //     console.log("xixi");
-    //     mainWin.setIgnoreMouseEvents(true, { forward: true });
-    // }).mouseout(function (e) {
-    //     console.log("haha");
-    //     mainWin.setIgnoreMouseEvents(false);
-    // });
-    // window.addEventListener('mousemove', function (e) {
-    //     if(e.target) {
-    //         if(e.target.className == "background" || e.target.className == "container") {
-    //             mainWin.setIgnoreMouseEvents(true, { forward: true });
-    //             console.log("xixi");
-    //         }
-    //     }
-    //     else {
-    //         mainWin.setIgnoreMouseEvents(false);
-    //         console.log("haha");
-    //     }
-    // });
 
     window.onresize = function () {
         $(".background").height(document.documentElement.clientHeight - 11);
@@ -84,6 +72,10 @@ function init() {
     $("#sidebar-settingbutton").click(onSideBarSetting);
 
     $("#sidebar-quitbutton").click(quit);
+
+    $(document).keydown((event) => {
+        onKeyDown(event);
+    });
 }
 
 function mouseEnterHoverBar() {
@@ -92,7 +84,7 @@ function mouseEnterHoverBar() {
             $(".background").addClass("background-hover");
         }
     }
-    //$(this).css("opacity", "1.0");
+    $(".side-hoverbar-interact").css("visibility", "hidden");
     $(".side-hoverbar").css("visibility", "visible");
 }
 
@@ -100,7 +92,7 @@ function mouseLeaveHoverBar() {
     if(!$("#sideBar").hasClass("sidenav-expand")) { // side bar opened, don't show hover state
         $(".background").removeClass("background-hover");
     }
-    //$(this).css("opacity", "0.0");
+    $(".side-hoverbar-interact").css("visibility", "visible");
     $(".side-hoverbar").css("visibility", "hidden");
 }
 
@@ -159,8 +151,38 @@ function quit() {
     }
 }
 
+function onKeyDown(event) {
+    if(event.keyCode == 116) {
+        refreshPage();
+    }
+}
+
+// I don't like too much IO operation, pack all operations into one
+function refreshPage() {
+    if(timerIdRefresh) {
+        clearTimeout(timerIdRefresh);
+    }
+    timerIdRefresh = setTimeout(refreshPageDelay, 500);
+}
+
+function refreshPageDelay() {
+    timerIdRefresh = 0;
+    ipcRenderer.send("RefreshFiles");
+}
+
+function refreshFileShowMode(json) {
+    try {
+        let mode = JSON.parse(json);
+        isShowHiddenFiles = mode.isShowHiddenFiles;
+        isShowFileExtName = mode.isShowFileExtName;
+    }
+    catch(err) {
+        console.log(err);
+    }
+}
 
 function onFileListReady(list) {
+    $(".container").empty();
     globalFileList = list;
     globalFileListMap.clear();
     for(let i = 0; i < globalFileList.length; i++) {
@@ -179,6 +201,14 @@ function runFileItem() {
     let id = $(this).attr("id");
     if(id >= 0 && id < globalFileList.length) {
         shell.openItem(globalFileList[ $(this).attr("id") ].path);
+    }
+}
+
+function onFileMouseUp(e) {
+    if(e.button == 2) {
+        ipcRenderer.send("FileContextMenu", JSON.stringify(
+            {"path":globalFileList[ $(this).attr("id") ].path}
+        ));
     }
 }
 
@@ -208,11 +238,56 @@ function onFileAdd(str) {
 }
 
 function addFileElement(id) {
+    let f = globalFileList[id];
+
+    if(f.isHidden) {
+        if(!isShowHiddenFiles) {
+            return;
+        }
+    }
+
     let elem = orgFileItemElem.clone();
     elem.attr("id", id);
-    elem.children(".filename").text(globalFileList[id].name);
-    elem.children(".filename").attr("title", globalFileList[id].name);
+
+    if(f.isDir) {
+        elem.children(".filename").text(f.name);
+    }
+    else {
+        if(isShowFileExtName) {
+            elem.children(".filename").text(f.name);
+        }
+        else {
+            try {
+                let withoutExt = Path.basename(f.name, Path.extname(f.name));
+                elem.children(".filename").text(withoutExt);
+            }
+            catch(err) {
+                elem.children(".filename").text(f.name);
+            }
+        }
+    }
+
+    if(f.isHidden) {
+        elem.children(".fileicon").css("opacity", "0.5");
+    }
+
+    let tooltip = f.name;
+    if(!f.isDir) {
+        tooltip += "\r\n项目类型：" + Path.extname(f.name) + " 文件";
+    }
+    if(f.mtime) {
+        tooltip += "\r\n修改时间：" + f.mtime;
+    }
+    else if(f.birthtime) {
+        tooltip += "\r\n创建时间：" + f.birthtime;
+    }
+    if(f.size) {
+        tooltip += "\r\n大小：" + (f.size / 1024) + "KB";
+    }
+    elem.attr("title", tooltip);
+
     elem.dblclick(runFileItem);
+    elem.mouseup(onFileMouseUp);
     $(".container").append(elem);
 }
 

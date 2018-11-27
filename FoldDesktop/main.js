@@ -13,13 +13,17 @@ const ICO = require("icojs");
 let mainWindow;
 
 let currentPath = Path.dirname(require.main.filename || process.mainModule.filename);
-    
+let watchingPaths = [];
 let libDimensionDesk = ffi.Library(currentPath + "\\DimensionDeskHelper64", {
     "Init": ["void", []],
     "UnInit": ["void", []],
     "GetCurrentDesktopPath": [ "int", ["char *", "int", "int *" ] ],
     "GetAllUsersDesktopPath": [ "int", ["char *", "int", "int *" ] ],
-    "GetFileIconToBuffer": [ "int", [ "string", "int", "char *", "int", "int *"] ]
+    "GetFileIconToBuffer": [ "int", ["string", "int", "char *", "int", "int *"] ],
+    "IsHiddenFile": ["int", ["string"]],
+    "IsShowHiddenFiles": ["int", []],
+    "IsShowFileExtName": ["int", []],
+    "ShowFileContextMenu": ["int", ["char *", "int", "string"]]
 });
 
 // https://github.com/electron/electron/blob/master/docs/api/frameless-window.md
@@ -76,25 +80,24 @@ app.on('activate', function () {
 function init(mainWindow) {
     libDimensionDesk.Init();
 
-    let paths = getDesktopPath();
-    if(!paths) {
+    watchingPaths = getDesktopPath();
+    watchingPaths = ["V:\\usb\\"];
+    if(!watchingPaths) {
         console.log("Error getting system desktop path, exit!");
         return;
     }
 
-    let fileList = [];
-
-    for(let i = 0; i < paths.length; i++) {
-        traversePath(paths[i], fileList);
-    }
-
-    mainWindow.webContents.send('FileListReady', fileList);
+    ipcMain.on("RefreshFiles", refreshFiles);
 
     ipcMain.on("GetFileIcon", (event, file) => {
         onGetFileIcon(event, file);
     });
 
-    var watcher = chokidar.watch(paths,
+    ipcMain.on("FileContextMenu", (event, str) => {
+        onFileContextMenu(str);
+    });
+
+    var watcher = chokidar.watch(watchingPaths,
         {
             ignoreInitial: true,
             depth: 0
@@ -121,7 +124,29 @@ function init(mainWindow) {
         mainWindow.webContents.send('WatcherError', error);
     });
 
+    refreshFileShowMode();
+
+    refreshFiles();
+}
+
+function refreshFiles() {
+    let fileList = [];
+
+    for(let i = 0; i < watchingPaths.length; i++) {
+        traversePath(watchingPaths[i], fileList);
+    }
+
+    mainWindow.webContents.send('FileListReady', fileList);
+
     retriveItemsIcon(fileList);
+}
+
+function refreshFileShowMode() {
+    let isShowHiddenFiles = libDimensionDesk.IsShowHiddenFiles() ? true : false;
+    let isShowFileExtName = libDimensionDesk.IsShowFileExtName() ? true : false;
+    mainWindow.webContents.send('RefreshFileShowMode', JSON.stringify(
+        {"isShowHiddenFiles":isShowHiddenFiles, "isShowFileExtName":isShowFileExtName}
+    ));
 }
 
 function getDesktopPath() {
@@ -197,8 +222,11 @@ function getOneFileInfo(fileName, filePath) {
         f.path = filePath;
         f.name = fileName;
         f.isDir = isDir;
-        f.isHidden = false;
+        f.isHidden = libDimensionDesk.IsHiddenFile(filePath) ? true : false;
         f.icon = null;
+        f.size = stats.size;
+        f.birthtime = stats.birthtime;
+        f.mtime = stats.mtime;
         return f;
     }
 }
@@ -252,5 +280,18 @@ function GetFileIcon(filePath) {
         }).catch(function (err) {
             parseComplete(err);
         });
+    }
+}
+
+function onFileContextMenu(str) {
+    try {
+        let file = eval('(' + str + ')');
+        if(file.path) {
+            let buf = mainWindow.getNativeWindowHandle();
+            libDimensionDesk.ShowFileContextMenu(buf, buf.byteLength, file.path);
+        }
+    }
+    catch(err) {
+        console.log(err);
     }
 }
