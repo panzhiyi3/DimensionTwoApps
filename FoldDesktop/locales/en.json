@@ -1,0 +1,25 @@
+{
+    "Fold": "Fold",
+    "Expand": "Expand",
+    "Menu": "Menu",
+    "CloseMenu": "Close menu",
+    "SortBy": "Sort by",
+    "SortName": "Name",
+    "SortSize": "Size",
+    "SortType": "Type",
+    "SortModTime": "Date Modified",
+    "Setting": "Setting",
+    "Exit": "Exit",
+    "ShowMyComputer": "Show Computer icon",
+    "ShowRecycleBin": "Show Recycle Bin icon",
+
+    "FileType": "Type",
+    "File": "File",
+    "ModTime": "Date modified",
+    "BirthTime": "Date created",
+    "Size": "Size",
+    "Bytes": "Bytes",
+
+    "Computer": "Computer",
+    "RecycleBin": "Recycle Bin"
+}

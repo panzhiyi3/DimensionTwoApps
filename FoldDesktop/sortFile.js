@@ -1,4 +1,6 @@
 window.$ = window.jQuery = require("./jquery.min");
+const { ipcRenderer } = require("electron");
+const Path = require("path");
 const ElectronStore = require("electron-store");
 const electronStore = new ElectronStore();
 
@@ -9,7 +11,7 @@ let SORT_TYPE = {
     ModTime: 3,
 };
 
-let sortType = SORT_TYPE.Name
+let sortBy = SORT_TYPE.Name
 
 module.exports = {
     init: init,
@@ -19,7 +21,7 @@ module.exports = {
     sortByModTime: sortByModTime,
     sortFileList: sortFileList,
 
-    sortType: sortType,
+    sortBy: sortBy,
     SORT_TYPE: SORT_TYPE
 }
 
@@ -32,11 +34,11 @@ function init() {
 
     $("#sortByModTime").click(sortByModTime);
 
-    if(electronStore.get("sortType")) {
-        sortType = electronStore.get("sortType");
+    if(electronStore.get("sortBy")) {
+        sortBy = electronStore.get("sortBy");
     }
 
-    switch(sortType) {
+    switch(sortBy) {
         case SORT_TYPE.Name:
             $("#sortByName").children(".check").css("display", "inline-block");
             break;
@@ -53,8 +55,8 @@ function init() {
 }
 
 function sortByName() {
-    sortType = SORT_TYPE.Name;
-    electronStore.set("sortType", sortType);
+    sortBy = SORT_TYPE.Name;
+    electronStore.set("sortBy", sortBy);
 
     $(".dropdown-content>div").children(".check").css("display", "none");
     $("#sortByName").children(".check").css("display", "inline-block");
@@ -62,8 +64,8 @@ function sortByName() {
 }
 
 function sortBySize() {
-    sortType = SORT_TYPE.Size;
-    electronStore.set("sortType", sortType);
+    sortBy = SORT_TYPE.Size;
+    electronStore.set("sortBy", sortBy);
 
     $(".dropdown-content>div").children(".check").css("display", "none");
     $("#sortBySize").children(".check").css("display", "inline-block");
@@ -71,8 +73,8 @@ function sortBySize() {
 }
 
 function sortByType() {
-    sortType = SORT_TYPE.Type;
-    electronStore.set("sortType", sortType);
+    sortBy = SORT_TYPE.Type;
+    electronStore.set("sortBy", sortBy);
 
     $(".dropdown-content>div").children(".check").css("display", "none");
     $("#sortByType").children(".check").css("display", "inline-block");
@@ -80,8 +82,8 @@ function sortByType() {
 }
 
 function sortByModTime() {
-    sortType = SORT_TYPE.ModTime;
-    electronStore.set("sortType", sortType);
+    sortBy = SORT_TYPE.ModTime;
+    electronStore.set("sortBy", sortBy);
 
     $(".dropdown-content>div").children(".check").css("display", "none");
     $("#sortByModTime").children(".check").css("display", "inline-block");
@@ -93,7 +95,7 @@ function sortFiles() {
 }
 
 function sortFileList(fileList) {
-    switch(sortType) {
+    switch(sortBy) {
         case SORT_TYPE.Name:
             fileList.sort(compareName);
             break;

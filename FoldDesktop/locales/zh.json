@@ -1,0 +1,25 @@
+{
+    "Fold": "折叠",
+    "Expand": "展开",
+    "Menu": "菜单",
+    "CloseMenu": "收起菜单",
+    "SortBy": "排序方式",
+    "SortName": "名称",
+    "SortSize": "大小",
+    "SortType": "项目类型",
+    "SortModTime": "修改日期",
+    "Setting": "设置",
+    "Exit": "退出",
+    "ShowMyComputer": "显示我的电脑图标",
+    "ShowRecycleBin": "显示回收站图标",
+
+    "FileType": "文件类型",
+    "File": "文件",
+    "ModTime": "修改时间",
+    "BirthTime": "创建时间",
+    "Size": "大小",
+    "Bytes": "字节",
+
+    "Computer": "计算机",
+    "RecycleBin": "回收站"
+}
