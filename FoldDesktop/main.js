@@ -1,4 +1,4 @@
-const electron  = require('electron');
+const electron  = require("electron");
 const { app, BrowserWindow, ipcMain, nativeImage } = electron;
 const fs = require("fs");
 const Path = require("path");
@@ -23,7 +23,8 @@ let libDimensionDesk = ffi.Library(currentPath + "\\DimensionDeskHelper64", {
     "IsHiddenFile": ["int", ["string"]],
     "IsShowHiddenFiles": ["int", []],
     "IsShowFileExtName": ["int", []],
-    "ShowFileContextMenu": ["int", ["char *", "int", "string"]]
+    "ShowFileContextMenu": ["int", ["char *", "int", "string"]],
+    "ShellDeleteFile": ["int", ["char *", "int", "string", "bool"]]
 });
 
 // https://github.com/electron/electron/blob/master/docs/api/frameless-window.md
@@ -49,29 +50,29 @@ function createWindow() {
         transparent: true
     });
 
-    mainWindow.loadFile('index.html');
+    mainWindow.loadFile("index.html");
 
-    mainWindow.webContents.openDevTools({mode: 'undocked'});
+    mainWindow.webContents.openDevTools({mode: "undocked"});
 
-    mainWindow.on('closed', function () {
+    mainWindow.on("closed", function () {
         mainWindow = null;
     });
 
-    mainWindow.webContents.on('did-finish-load', () => {
+    mainWindow.webContents.on("did-finish-load", () => {
         init(mainWindow);
     });
 }
 
-app.on('ready', createWindow);
+app.on("ready", createWindow);
 
-app.on('window-all-closed', function () {
+app.on("window-all-closed", function () {
     libDimensionDesk.UnInit();
-    if (process.platform !== 'darwin') {
+    if (process.platform !== "darwin") {
         app.quit();
     }
 })
 
-app.on('activate', function () {
+app.on("activate", function () {
     if (mainWindow === null) {
         createWindow();
     }
@@ -96,6 +97,14 @@ function init(mainWindow) {
     ipcMain.on("FileContextMenu", (event, str) => {
         onFileContextMenu(str);
     });
+
+    ipcMain.on("DeleteFile", (event, str) => {
+        onDeleteFile(str);
+    });
+
+    ipcMain.on("Fold", FoldWindow);
+
+    ipcMain.on("Expand", ExpandWindow);
 
     var watcher = chokidar.watch(watchingPaths,
         {
@@ -294,4 +303,27 @@ function onFileContextMenu(str) {
     catch(err) {
         console.log(err);
     }
+}
+
+function onDeleteFile(str) {
+    try {
+        let file = eval('(' + str + ')');
+        if(file.path) {
+            let buf = mainWindow.getNativeWindowHandle();
+            libDimensionDesk.ShellDeleteFile(buf, buf.byteLength, file.path, file.forceDelete);
+        }
+    }
+    catch(err) {
+        console.log(err);
+    }
+}
+
+function FoldWindow() {
+    let size = mainWindow.getContentSize();
+    mainWindow.setContentSize(35, size[1]);
+}
+
+function ExpandWindow() {
+    let size = mainWindow.getContentSize();
+    mainWindow.setContentSize(electron.screen.getPrimaryDisplay().workArea.width / 2, size[1]);
 }

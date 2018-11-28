@@ -28,10 +28,30 @@
                 <div class="sidebar-button fas fa-bars" title="菜单"></div>
             </div>
         </div>
-        <div id="sideBar" class="sidenav">
+        <div id="sideBar" class="sidenav" style="visibility: hidden;">
             <div id="sidebar-closebutton" class="fas fa-fw fa-times" title="收起菜单"></div>
+            <div id="sidebar-sortbutton" class="fas fa-fw fa-sort-amount-down" title="排序方式">
+                <div class="dropdown-content">
+                    <div id="sortByName">
+                        <span class="check fas fa-fw fa-check"></span>
+                        <a href="#">名称</a>
+                    </div>
+                    <div id="sortBySize">
+                        <span class="check fas fa-fw fa-check"></span>
+                        <a href="#">大小</a>
+                    </div>
+                    <div id="sortByType">
+                        <span class="check fas fa-fw fa-check"></span>
+                        <a href="#">项目类型</a>
+                    </div>
+                    <div id="sortByModTime">
+                        <span class="check fas fa-fw fa-check"></span>
+                        <a href="#">修改日期</a>
+                    </div>
+                </div>
+            </div>
             <div id="sidebar-settingbutton" class="fas fa-fw fa-cog" title="设置"></div>
-            <div style="flex: 1;"></div>
+            <p style="flex: 1;"></p>
             <div id="sidebar-quitbutton" class="fas fa-fw fa-power-off" title="退出"></div>
         </div>
     </div>

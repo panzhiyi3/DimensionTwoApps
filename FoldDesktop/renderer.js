@@ -2,7 +2,10 @@ window.$ = window.jQuery = require("./jquery.min");
 const mainWin = require("electron").remote.getCurrentWindow();
 const { ipcRenderer, shell } = require("electron");
 const Path = require("path");
+const ElectronStore = require("electron-store");
+const electronStore = new ElectronStore();
 const SettingPanel = require("./settingPanel");
+const SortFile = require("./sortFile");
 
 let globalFileList = [];
 let globalFileListMap = new Map();
@@ -12,15 +15,6 @@ let isFold = false;
 let isShowHiddenFiles = true;
 let isShowFileExtName = true;
 let timerIdRefresh = 0;
-
-let SORT_TYPE = {
-    Name: 0,
-    Size: 1,
-    Type: 2,
-    ModTime: 3,
-};
-
-let sortType = SORT_TYPE.Name;
 
 init();
 
@@ -69,6 +63,8 @@ function init() {
 
     $(".background").height(document.documentElement.clientHeight - 11);
 
+    $(".container").bind("mousewheel", onMouseWheel);
+
     $(".side-hoverbar-transparent").mouseenter(mouseEnterHoverBar)
 
     $(".side-hoverbar-transparent").mouseleave(mouseLeaveHoverBar);
@@ -83,11 +79,51 @@ function init() {
 
     $("#sidebar-quitbutton").click(quit);
 
+    $("#sidebar-sortbutton").click(function() {
+        $(".dropdown-content").toggleClass("dropdown-content-show");
+    });
+
+    // Close the sort type button dropdown menu, if the user clicks outside of it
+    window.onclick = function (e) {
+        if (!e.target.matches("#sidebar-sortbutton")) {
+            if($(".dropdown-content").hasClass("dropdown-content-show")) {
+                $(".dropdown-content").removeClass("dropdown-content-show")
+            }
+        }
+    }
+
     $(document).keydown((event) => {
         onKeyDown(event);
     });
 
+    SortFile.init();
+
     SettingPanel.init();
+}
+
+function onMouseWheel(e) {
+    e.preventDefault();
+    let step = 80;
+
+    function scrollTo(element, to, duration) {
+        if (duration <= 0)
+            return;
+        var difference = to - element.scrollLeft;
+        var perTick = difference / duration * 10;
+
+        setTimeout(function () {
+            element.scrollLeft = element.scrollLeft + perTick;
+            if (element.scrollLeft == to)
+                return;
+            scrollTo(element, to, duration - 10);
+        }, 10);
+    }
+
+    if (e.originalEvent.wheelDelta < 0) {
+        scrollTo(this, this.scrollLeft + step, 50);
+    } else {
+        scrollTo(this, this.scrollLeft - step, 50);
+    }
 }
 
 function mouseEnterHoverBar() {
@@ -111,6 +147,7 @@ function mouseLeaveHoverBar() {
 function openSidebar() {
     if(!$("#sideBar").hasClass("sidenav-expand")) {
         $(".background").addClass("background-hover");
+        $("#sideBar").css("visibility", "visible");
         $("#sideBar").addClass("sidenav-expand");
         mainWin.setResizable(true);
         $(".side-hoverbar-transparent").mouseleave();
@@ -119,6 +156,7 @@ function openSidebar() {
 
 function closeSidebar() {
     $(".background").removeClass("background-hover");
+    $("#sideBar").css("visibility", "hidden");
     $("#sideBar").removeClass("sidenav-expand");
     mainWin.setResizable(false);
 }
@@ -132,6 +170,9 @@ function foldOrExpand() {
             .addClass("fa-caret-left")
             .attr("title", "折叠");
         }
+        $(".sidebar-button").css("visibility", "visible");
+
+        ipcRenderer.send("Expand");
     }
     else {
         isFold = true;
@@ -142,6 +183,9 @@ function foldOrExpand() {
             .addClass("fa-caret-right")
             .attr("title", "展开");
         }
+        $(".sidebar-button").css("visibility", "hidden");
+
+        ipcRenderer.send("Fold");
     }
 }
 
@@ -192,7 +236,7 @@ function onFileListReady(list) {
     globalFileList = list;
     globalFileListMap.clear();
     addSystemIcons();
-    sortFileList();
+    SortFile.sortFileList(globalFileList);
     for(let i = 0; i < globalFileList.length; i++) {
         globalFileListMap.set(globalFileList[i].path, i);
     }
@@ -212,6 +256,7 @@ function addSystemIcons() {
             name: "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}",
             isDir: false,
             isHidden: false,
+            size: 0,
             icon: null
         };
         globalFileList.push(file);
@@ -224,6 +269,7 @@ function addSystemIcons() {
             name: "::{645FF040-5081-101B-9F08-00AA002F954E}",
             isDir: false,
             isHidden: false,
+            size: 0,
             icon: null
         };
         globalFileList.push(file);
@@ -244,6 +290,21 @@ function onFileMouseUp(e) {
         ipcRenderer.send("FileContextMenu", JSON.stringify(
             {"path":globalFileList[ $(this).attr("id") ].path}
         ));
+    }
+}
+
+function onFileKeyUp(e) {
+    if(e.keyCode == 46) { // delete
+        let forceDelete = e.keyCode == 16 // shift;
+        let id = $(this).attr("id");
+        if(globalFileList[id]) {
+            ipcRenderer.send("DeleteFile", JSON.stringify(
+                {path: globalFileList[id].path, forceDelete:forceDelete}
+            ));
+        }
+        else {
+            console.log("Delete file erroe, file id( " + id + " ) not exist");
+        }
     }
 }
 
@@ -387,6 +448,7 @@ function addFileElement(id) {
 
     elem.dblclick(runFileItem);
     elem.mouseup(onFileMouseUp);
+    elem.keyup(onFileKeyUp);
     $(".container").append(elem);
 }
 
@@ -417,105 +479,4 @@ function onFileDel(filePath) {
     catch(err) {
         console.log(err);
     }
-}
-
-function sortFileList() {
-    switch(sortType) {
-        case SORT_TYPE.Name:
-            globalFileList.sort(compareName);
-            break;
-        case SORT_TYPE.Size:
-            globalFileList.sort(compareSize);
-            break;
-        case SORT_TYPE.Type:
-            globalFileList.sort(compareType);
-            break;
-        case SORT_TYPE.ModTime:
-            //globalFileList.sort(compareModTime);
-            break;
-    }
-}
-
-function compareCommon(a, b) {
-    let isASpecialFile = a.name.search("::") == 0;
-    let isBSpecialFile = b.name.search("::") == 0;
-
-    if(isASpecialFile) {
-        if(!isBSpecialFile) {
-            return -1;
-        }
-    }
-    else if(isBSpecialFile) {
-        if(!isASpecialFile) {
-            return 1;
-        }
-    }
-
-    if(a.isDir) {
-        if(!b.isDir) {
-            return -1;
-        }
-    }
-    else if(b.isDir) {
-        if(!a.isDir) {
-            return 1;
-        }
-    }
-    return 0;
-}
-
-function compareName(a, b) {
-    if(a.name == null || b.name == null) {
-        return 0;
-    }
-    let ret = compareCommon(a, b);
-    if(ret != 0) {
-        return ret;
-    }
-    return a.name.localeCompare(b.name);
-}
-
-function compareSize(a, b) {
-    if(a.name == null || b.name == null) {
-        return 0;
-    }
-    if(a.size == null || b.size == null) {
-        return 0;
-    }
-    let ret = compareCommon(a, b);
-    if(ret != 0) {
-        return ret;
-    }
-
-    if(a.size < b.size) {
-        return -1;
-    } else if(a.size > b.size) {
-        return 1;
-    }
-    else {
-        return a.name.localeCompare(b.name);
-    }
-}
-
-function compareType(a, b) {
-    if(a.name == null || b.name == null) {
-        return 0;
-    }
-
-    let aExt = Path.extname(a.name);
-    let bExt = Path.extname(a.name);
-
-    let ret = compareCommon(a, b);
-    if(ret != 0) {
-        return ret;
-    }
-
-    ret = aExt.localeCompare(bExt);
-    if(ret != 0) {
-        return ret;
-    }
-    return a.name.localeCompare(b.name);
-}
-
-function compareModTime(a, b) {
 }
