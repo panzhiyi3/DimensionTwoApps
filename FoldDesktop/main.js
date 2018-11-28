@@ -82,7 +82,6 @@ function init(mainWindow) {
     libDimensionDesk.Init();
 
     watchingPaths = getDesktopPath();
-    watchingPaths = ["V:\\usb\\"];
     if(!watchingPaths) {
         console.log("Error getting system desktop path, exit!");
         return;
