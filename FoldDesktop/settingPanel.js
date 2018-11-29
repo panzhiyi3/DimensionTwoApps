@@ -29,6 +29,7 @@ function init() {
 
     $(".setting-closebutton").click(hide);
     $("input[type=checkbox]").change(onCheckboxChanged);
+    $("#resetWindowBounds").click(resetBounds);
 }
 
 function show() {
@@ -65,4 +66,9 @@ function onCheckboxChanged() {
         showRecycleBin = checked;
         ipcRenderer.send("RefreshFiles");
     }
+}
+
+function resetBounds() {
+    electronStore.delete("bounds");
+    ipcRenderer.send("ResetWindowBounds");
 }

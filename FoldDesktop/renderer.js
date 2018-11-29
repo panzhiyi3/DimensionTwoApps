@@ -55,6 +55,10 @@ ipcRenderer.on("DirectoryDel", (event, filePath) => {
     onFileDel(filePath);
 });
 
+ipcRenderer.on("StoreWindowBounds", (event, bounds) => {
+    onStoreWindowBounds(bounds);
+});
+
 function init() {
     initI18N();
 
@@ -126,6 +130,7 @@ function initI18N() {
     $(".setting-caption").text(i18n.__("Setting"));
     $("#ShowMyComputer").parent().children("text").text(i18n.__("ShowMyComputer"));
     $("#ShowRecycleBin").parent().children("text").text(i18n.__("ShowRecycleBin"));
+    $("#resetWindowBounds").text(i18n.__("ResetWinBounds"));
 }
 
 function onMouseWheel(e) {
@@ -245,6 +250,10 @@ function refreshPage() {
 function refreshPageDelay() {
     timerIdRefresh = 0;
     ipcRenderer.send("RefreshFiles");
+}
+
+function onStoreWindowBounds(bounds) {
+    electronStore.set("bounds", bounds);
 }
 
 function refreshFileShowMode(json) {

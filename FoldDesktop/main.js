@@ -7,10 +7,14 @@ const ffi = require("ffi");
 const ref = require("ref");
 const chokidar = require("chokidar");
 const ICO = require("icojs");
+const ElectronStore = require("electron-store");
+const electronStore = new ElectronStore();
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
+
+let timerIdResized = 0;
 
 let currentPath = Path.dirname(require.main.filename || process.mainModule.filename);
 let watchingPaths = [];
@@ -33,15 +37,29 @@ let libDimensionDesk = ffi.Library(currentPath + "\\DimensionDeskHelper64", {
 
 function createWindow() {
     let display = electron.screen.getPrimaryDisplay();
+    let winRect = {
+        x: display.workArea.x - 5,
+        y:display.workArea.y,
+        width: display.workArea.width / 2,
+        height: display.workArea.height
+    };
+    if(electronStore.get("bounds")) {
+        let bounds = electronStore.get("bounds");
+        winRect.x = bounds.x;
+        winRect.y = bounds.y;
+        winRect.width = bounds.width;
+        winRect.height = bounds.height;
+    }
+
     mainWindow = new BrowserWindow({
         title: "Fold Desktop",
 
         // Minus 5,for there is a boder frame on the window, and cannot be remove, so skip 5px for border
         // the window border don't generate mouse event, it made "hoverbar" useless
-        x: display.workArea.x - 5,
-        y: display.workArea.y,
-        width: display.workArea.width / 2,
-        height: display.workArea.height,
+        x: winRect.x,
+        y: winRect.y,
+        width: winRect.width,
+        height: winRect.height,
         resizable: false,
         maximizable: false,
         minimizable: false,
@@ -54,6 +72,19 @@ function createWindow() {
 
     mainWindow.webContents.openDevTools({mode: "undocked"});
 
+    
+    mainWindow.on("move", function() {
+        if(mainWindow != null) {
+            windowMovedOrResized();
+        }
+    })
+
+    mainWindow.on("resize", function() {
+        if(mainWindow != null) {
+            windowMovedOrResized();
+        }
+    })
+
     mainWindow.on("closed", function () {
         mainWindow = null;
     });
@@ -61,6 +92,16 @@ function createWindow() {
     mainWindow.webContents.on("did-finish-load", () => {
         init(mainWindow);
     });
+}
+
+function windowMovedOrResized() {
+    if(timerIdResized) {
+        clearTimeout(timerIdResized);
+    }
+    timerIdResized = setTimeout(function() {
+        let bounds = mainWindow.getBounds();
+        mainWindow.webContents.send("StoreWindowBounds", bounds); // Let Renderer process write config file,don't write in both processes
+    }, 500);
 }
 
 app.on("ready", createWindow);
@@ -101,9 +142,11 @@ function init(mainWindow) {
         onDeleteFile(str);
     });
 
-    ipcMain.on("Fold", FoldWindow);
+    ipcMain.on("Fold", foldWindow);
 
-    ipcMain.on("Expand", ExpandWindow);
+    ipcMain.on("Expand", expandWindow);
+
+    ipcMain.on("ResetWindowBounds", resetWindowBounds);
 
     var watcher = chokidar.watch(watchingPaths,
         {
@@ -112,24 +155,24 @@ function init(mainWindow) {
         });
     watcher.on("add", function (path) {
         let file = getOneFileInfo(Path.basename(path), path);
-        mainWindow.webContents.send('FileAdd', JSON.stringify(file));
+        mainWindow.webContents.send("FileAdd", JSON.stringify(file));
     })
     .on("change", function (path) {
         let file = getOneFileInfo(Path.basename(path), path);
-        mainWindow.webContents.send('FileModified', JSON.stringify(file));
+        mainWindow.webContents.send("FileModified", JSON.stringify(file));
     })
     .on("unlink", function (path) {
-        mainWindow.webContents.send('FileDel', path);
+        mainWindow.webContents.send("FileDel", path);
     })
     .on("addDir", function (path) {
         let file = getOneFileInfo(Path.basename(path), path);
-        mainWindow.webContents.send('DirectoryAdd', JSON.stringify(file));
+        mainWindow.webContents.send("DirectoryAdd", JSON.stringify(file));
     })
     .on("unlinkDir", function (path) {
-        mainWindow.webContents.send('DirectoryDel', path);
+        mainWindow.webContents.send("DirectoryDel", path);
     })
     .on("error", function (error) {
-        mainWindow.webContents.send('WatcherError', error);
+        mainWindow.webContents.send("WatcherError", error);
     });
 
     refreshFiles();
@@ -317,12 +360,23 @@ function onDeleteFile(str) {
     }
 }
 
-function FoldWindow() {
+function foldWindow() {
     let size = mainWindow.getContentSize();
     mainWindow.setContentSize(35, size[1]);
 }
 
-function ExpandWindow() {
+function expandWindow() {
     let size = mainWindow.getContentSize();
     mainWindow.setContentSize(electron.screen.getPrimaryDisplay().workArea.width / 2, size[1]);
+}
+
+function resetWindowBounds() {
+    let display = electron.screen.getPrimaryDisplay();
+    let winRect = {
+        x: display.workArea.x - 5,
+        y:display.workArea.y,
+        width: display.workArea.width / 2,
+        height: display.workArea.height
+    };
+    mainWindow.setBounds(winRect);
 }
