@@ -100,17 +100,25 @@ div {
     width: 16px;
     height: 16px;
     margin-left: 6px;
-    background: url(add_button.png) no-repeat;
-    background-size: 100% 100%;
+    font-size: 14px;
+    text-align: center;
+    line-height: 16px;
+    vertical-align: middle;
+    color: rgb(230, 230, 240);
     transition: all 200ms linear;
     -webkit-app-region: no-drag;
 }
 
 .add-button:hover {
-    box-shadow: 0 0 4px rgba(0,0,0,0.2);
-    background: url(add_button_hover.png) no-repeat;
-    background-size:100% 100%;
-    box-shadow: 0 0 4px rgba(0,0,0,0.2);
+    text-shadow: 0 0 4px rgba(0,0,0,0.4);
+    box-shadow: 0 0 4px rgba(0,0,0,0.4);
+}
+
+.add-button span {
+    font-size: 14px;
+    text-align: center;
+    line-height: 16px;
+    vertical-align: middle;
 }
 
 .delete-button {
@@ -120,15 +128,17 @@ div {
     height: 16px;
     top: -23px;
     right: 6px;
-    background: url(del_button.png) no-repeat;
-    background-size: 100% 100%;
+    font-size: 16px;
+    text-align: center;
+    line-height: 16px;
+    vertical-align: middle;
+    color: rgb(230, 230, 240);
     -webkit-app-region: no-drag;
     visibility: hidden;
 }
 
 .delete-button:hover {
-    background: url(del_button_hover.png) no-repeat;
-    background-size: 100% 100%;
+    text-shadow: 0 0 4px rgba(0,0,0,0.2);
     box-shadow: 0 0 4px rgba(0,0,0,0.2);
 }
 
@@ -144,15 +154,23 @@ div {
     height: 16px;
     top: -190px;
     right: 6px;
-    background: url(collapse_button.png) no-repeat;
-    background-size: 100% 100%;
+    font-size: 18px;
+    text-align: center;
+    line-height: 16px;
+    vertical-align: middle;
+    color: rgb(230, 230, 240);
     -webkit-app-region: no-drag;
     visibility: hidden;
 }
 
+.collapse-button label {
+    text-align: center;
+    line-height: 16px;
+    vertical-align: middle;
+}
+
 .collapse-button:hover {
-    background: url(collapse_button_hover.png) no-repeat;
-    background-size: 100% 100%;
+    text-shadow: 0 0 4px rgba(0,0,0,0.2);
     box-shadow: 0 0 4px rgba(0,0,0,0.2);
 }
 

@@ -1,6 +1,7 @@
 window.$ = window.jQuery = require("./jquery.min");
 const ElectronStore = require("electron-store");
 const electronStore = new ElectronStore();
+let i18n = require("i18n");
 
 let nextNoteId = 0;
 let arrayNotes = [];
@@ -11,6 +12,8 @@ $(".item").detach();
 init();
 
 function init() {
+    initI18N();
+
     if(electronStore.get("arrayNotes")) {
         arrayNotes = JSON.parse("[" + electronStore.get("arrayNotes") + "]");
 
@@ -23,6 +26,16 @@ function init() {
             setNoteContent(arrayNotes[i], electronStore.get("" + arrayNotes[i]));
         }
     }
+}
+
+function initI18N() {
+    i18n.configure({
+        locales: ["en", "zh"],
+        defaultLocale: "en",
+        fallbacks: {"zh-CN": "zh", "zh-TW": "zh", "zh-HK": "zh"},
+        directory: __dirname + "/locales"
+    });
+    i18n.setLocale(navigator.language);
 }
 
 function addNote(id) {
@@ -60,7 +73,7 @@ function addNote(id) {
 
     item.children(".delete-button").click(function (e) {
         e.stopPropagation();
-        if(confirm("确认删除此记录？")) {
+        if(confirm(i18n.__("DeleteConfirm"))) {
             delNote(parseInt( $(this).parent().attr("id") ));
         }
     });

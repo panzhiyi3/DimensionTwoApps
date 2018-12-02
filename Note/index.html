@@ -4,20 +4,27 @@
 <head>
     <link rel="stylesheet" type="text/css" href="style.css">
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="fontawesome/css/all.min.css">
     <title>Notes</title>
 </head>
 
 <body>
     <div class="background">
         <div class="titlebar">Notes
-            <div class="add-button"></div>
+            <div class="add-button">
+                <span class="fas fa-plus"></span>
+            </div>
         </div>
         <div class="container">
             <div id="0" class="item item-color">
                 <div class="content-short"></div>
                 <textarea class="content-full" style="display: none"></textarea>
-                <div class="collapse-button" style="display: none"></div>
-                <div class="delete-button"></div>
+                <div class="collapse-button" style="display: none">
+                    <span class="fas fa-sort-up"></span>
+                </div>
+                <div class="delete-button">
+                    <span class="fas fa-minus"></span>
+                </div>
             </div>
         </div>
     </div>
