@@ -1,16 +1,15 @@
 {
-    "name": "systeminfo",
-    "version": "1.0.0",
-    "description": "SystemInfo for DimensionTwo",
-    "main": "main.js",
-    "scripts": {
-      "start": "electron ."
-    },
-    "keywords": [],
-    "author": "AeroRider",
-    "license": "MIT",
-    "devDependencies": {
-      "electron": "^2.0.13"
-    }
+  "name": "systeminfo",
+  "version": "1.0.0",
+  "description": "SystemInfo for DimensionTwo",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [],
+  "author": "AeroRider",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^2.0.14"
   }
-  
+}

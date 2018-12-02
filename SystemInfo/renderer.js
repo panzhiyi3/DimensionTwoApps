@@ -3,13 +3,13 @@ var d3 = require("./d3.min.js")
 
 var startMeasure = cpuAverage()
 
-setTimeout(doCalc, 1000)
+setTimeout(doCalc, 2000)
 
 var width = window.innerWidth,
     height = window.innerHeight,
-    radius = 70,
-    innerRadius = 50,
-    ringRadius = 75,
+    radius = 50,
+    innerRadius = 30,
+    ringRadius = 54,
     twoPi = 2 * Math.PI,
     progress = 0,
     progressRam = 0,
@@ -69,7 +69,7 @@ meterRam.append("path")
 var foregroundRam = meterRam.append("path")
     .attr("class", "foreground");
 
-    meterRam.append("path")
+meterRam.append("path")
     .attr("class", "foreground-ring")
     .attr("d", arcRing.endAngle(twoPi));
 
@@ -78,12 +78,62 @@ var textRam = meterRam.append("text")
     .attr("dy", ".35em")
     .text("RAM");
 
+// CPU usage recorder
+var cpuDate = [];
+var recordMaxHistory = 20;
+var recorderHeight = 50;
+var recorderWidth = 200;
+
+var recorderMargin = {top: 10, right: 0, bottom: 10, left: 40};
+
+var cpuRecorder = d3.select("#cpuRecorder")
+
+var recXScale = d3.scaleLinear().range([0, recorderWidth]).domain([0,recordMaxHistory]);
+
+var recYScale = d3.scaleLinear().range([recorderHeight, 0]).domain([0,100]);
+
+recXAxis = g => g
+    .attr("class", "recorder-axis")
+    .attr("transform", "translate(" + recorderMargin.left + "," + (recorderHeight + recorderMargin.top) + ")")
+    .call(d3.axisBottom(recXScale).ticks(recordMaxHistory).tickSize(4).tickFormat("").scale(recXScale));
+
+recYAxis = g => g
+    .attr("class", "recorder-axis")
+    .attr("transform", "translate(" + recorderMargin.left + "," + recorderMargin.top + ")")
+    .call(d3.axisLeft().ticks(3).scale(recYScale).tickSize(4).tickFormat(function(d) {
+        return d + "%";
+      }));
+
+var cpuLine = d3.line()
+    .x(d => recXScale(d.x))
+    .y(d => recYScale(d.y));
+
+cpuRecorder.append("rect")
+    .attr("x", recorderMargin.left)
+    .attr("y", recorderMargin.top)
+    .attr("width", recorderWidth)
+    .attr("height", recorderHeight)
+    .attr("fill", "url(#bkg)");
+
+cpuRecorder.append("g")
+    .attr("transform", "translate(0, 100)")
+    .call(recXAxis)
+
+cpuRecorder.append("g")
+    .attr("transform", "translate(10, 100)")
+    .call(recYAxis);
+
+var cpuRecorderLine = cpuRecorder.append("path")
+    .attr("d", cpuLine(cpuDate))
+    .attr("class", "recorder-line")
+    .attr("transform", "translate(" + recorderMargin.left + "," + recorderMargin.top + ")");
+
+
 foreground.transition().tween("progress", function () {
     var i = d3.interpolate(progress, 0 / total);
     return function (t) {
         progress = i(t);
         foreground.attr("d", arc.endAngle(twoPi * progress));
-        //text.text(formatPercent(progress));
     };
 });
 
@@ -108,7 +158,6 @@ function doCalc() {
         return function (t) {
             progress = i(t);
             foreground.attr("d", arc.endAngle(twoPi * progress));
-            //text.text(formatPercent(progress));
         };
     });
 
@@ -121,6 +170,8 @@ function doCalc() {
             foregroundRam.attr("d", arc.endAngle(twoPi * progressRam));
         };
     });
+
+    updateRecorder(percentageCPU);
 
     startMeasure = endMeasure
 
@@ -142,4 +193,21 @@ function cpuAverage() {
     }
 
     return { idle: totalIdle / cpus.length, total: totalTick / cpus.length }
+}
+
+function updateRecorder(newPercentage) {
+    if(cpuDate.length > 20) {
+        cpuDate.shift();
+    }
+
+    cpuDate.push({
+        x: cpuDate.length,
+        y: newPercentage 
+    });
+
+    for(let i = 0; i < cpuDate.length; i++) {
+        cpuDate[i].x = i;
+        cpuDataIndex = i + 1;
+    }
+    cpuRecorderLine.attr("d", cpuLine(cpuDate));
 }
