@@ -132,10 +132,13 @@
     text-decoration: none;
     display: inline-block;
     text-align: center;
+    text-shadow: none;
 }
 
 .dropdown-content div:hover {
     background: var(--hover);
+    color: var(--text-color-dark-hover);
+    text-shadow: 0 0 4px rgba(0,0,0,0.2);
 }
 
 .dropdown-content span {
@@ -150,11 +153,6 @@
     text-decoration: none;
     text-align: center;
     vertical-align: middle;
-}
-
-.dropdown-content span:hover, a:hover {
-    color: var(--text-color-dark-hover);
-    text-shadow: 0 0 4px rgba(0,0,0,0.2);
 }
 
 .dropdown-content-show {
