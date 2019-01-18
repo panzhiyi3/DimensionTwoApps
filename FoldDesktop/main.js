@@ -16,6 +16,8 @@ let mainWindow;
 
 let timerIdResized = 0;
 
+let windowCollapsed = false;
+
 let currentPath = Path.dirname(require.main.filename || process.mainModule.filename);
 let watchingPaths = [];
 let libDimensionDesk = ffi.Library(currentPath + "\\DimensionDeskHelper64", {
@@ -98,12 +100,15 @@ function createWindow() {
 }
 
 function windowMovedOrResized() {
+    if(windowCollapsed)
+        return;
+
     if(timerIdResized) {
         clearTimeout(timerIdResized);
     }
     timerIdResized = setTimeout(function() {
         let bounds = mainWindow.getBounds();
-        mainWindow.webContents.send("StoreWindowBounds", bounds); // Let Renderer process write config file,don't write in both processes
+        mainWindow.webContents.send("StoreWindowBounds", bounds); // Let Renderer process write config file, don't write in two processes
     }, 500);
 }
 
@@ -364,11 +369,13 @@ function onDeleteFile(str) {
 }
 
 function foldWindow() {
+    windowCollapsed = true;
     let size = mainWindow.getContentSize();
     mainWindow.setContentSize(35, size[1]);
 }
 
 function expandWindow() {
+    windowCollapsed = false;
     let size = mainWindow.getContentSize();
     mainWindow.setContentSize(electron.screen.getPrimaryDisplay().workArea.width / 2, size[1]);
 }

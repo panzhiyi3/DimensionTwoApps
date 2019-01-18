@@ -128,8 +128,8 @@ function initI18N() {
     $("#sidebar-settingbutton").attr("title", i18n.__("Setting"));
     $("#sidebar-quitbutton").attr("title", i18n.__("Exit"));
     $(".setting-caption").text(i18n.__("Setting"));
-    $("#ShowMyComputer").parent().children("text").text(i18n.__("ShowMyComputer"));
-    $("#ShowRecycleBin").parent().children("text").text(i18n.__("ShowRecycleBin"));
+    $("#ShowMyComputer").parent().children("#text").text(i18n.__("ShowMyComputer"));
+    $("#ShowRecycleBin").parent().children("#text").text(i18n.__("ShowRecycleBin"));
     $("#resetWindowBounds").text(i18n.__("ResetWinBounds"));
 }
 
@@ -462,7 +462,14 @@ function addFileElement(id) {
         }
         else {
             if(isShowFileExtName) {
-                elem.children(".filename").text(f.name);
+                let extName = Path.extname(f.name);
+                if(extName != ".lnk") {
+                    elem.children(".filename").text(f.name);
+                }
+                else {
+                    let withoutExt = Path.basename(f.name, extName);
+                    elem.children(".filename").text(withoutExt);
+                }
             }
             else {
                 try {
