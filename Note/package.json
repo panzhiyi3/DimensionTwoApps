@@ -4,7 +4,11 @@
   "description": "Note for DimensionTwo",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "rebuild": "electron-rebuild.cmd",
+    "electron-build": "electron-packager.cmd .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
   },
   "keywords": [],
   "author": "AeroRider",
@@ -15,5 +19,15 @@
   "dependencies": {
     "electron-store": "^2.0.0",
     "i18n": "^0.8.3"
-  }
+  },
+  "build": {
+    "appId": "com.dimensiondesk.folddesktop",
+    "win": {
+      "target": "portable"
+    },
+    "nodeGypRebuild": false,
+    "npmRebuild": false,
+    "asar": false
+  },
+  "postinstall": "electron-builder install-app-deps"
 }

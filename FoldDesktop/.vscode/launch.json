@@ -14,13 +14,8 @@
               "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd"
             },
             "args" : [
-                ".",
-                //"--inspect=5858",
-                "--remote-debugging-port=5858"
-            ],
-            //"address": "localhost",
-            "port": 5858,
-            "protocol": "inspector"
-          }
+                "."
+            ]
+        }
     ]
 }

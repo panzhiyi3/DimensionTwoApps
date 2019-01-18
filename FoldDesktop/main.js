@@ -51,6 +51,10 @@ function createWindow() {
         winRect.height = bounds.height;
     }
 
+    // DimensionTwo will reset windows pos to (0,0) at first time, set pos back ourself
+    setTimeout(updateWindowPos, 1000)
+    setTimeout(updateWindowPos, 4000)
+
     mainWindow = new BrowserWindow({
         title: "Fold Desktop",
 
@@ -71,7 +75,6 @@ function createWindow() {
     mainWindow.loadFile("index.html");
 
     mainWindow.webContents.openDevTools({mode: "undocked"});
-
     
     mainWindow.on("move", function() {
         if(mainWindow != null) {
@@ -378,5 +381,25 @@ function resetWindowBounds() {
         width: display.workArea.width / 2,
         height: display.workArea.height
     };
+    mainWindow.setBounds(winRect);
+}
+
+function updateWindowPos() {
+    let display = electron.screen.getPrimaryDisplay();
+    let winRect = {
+        x: display.workArea.x - 5,
+        y:display.workArea.y,
+        width: display.workArea.width / 2,
+        height: display.workArea.height
+    };
+
+    if(electronStore.get("bounds")) {
+        let bounds = electronStore.get("bounds");
+        winRect.x = bounds.x;
+        winRect.y = bounds.y;
+        winRect.width = bounds.width;
+        winRect.height = bounds.height;
+    }
+
     mainWindow.setBounds(winRect);
 }

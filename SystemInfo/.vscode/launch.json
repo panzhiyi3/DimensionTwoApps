@@ -9,11 +9,13 @@
             "type": "node",
             "request": "launch",
             "cwd": "${workspaceRoot}",
-            "runtimeExecutable": "D:\\development\\electron-v2.0.13-win32-ia32\\electron.exe",
+            "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
             "windows": {
-              "runtimeExecutable": "D:\\development\\electron-v2.0.13-win32-ia32\\electron.exe"
+                "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd"
             },
-            "args" : ["."]
-          }
+            "args": [
+                "."
+            ]
+        }
     ]
 }

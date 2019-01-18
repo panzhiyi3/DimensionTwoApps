@@ -6,9 +6,12 @@ let mainWindow
 
 function createWindow() {
     mainWindow = new BrowserWindow({
-        width: 350,//334,
-        height: 500,//180,
-        maximizable: true, frame: false, transparent: true
+        width: 300,
+        height: 210,
+        resizable: false,
+        maximizable: false,
+        frame: false,
+        transparent: true
     });
     var id = mainWindow.id;
 

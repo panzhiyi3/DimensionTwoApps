@@ -1,0 +1,9 @@
+{
+    "WidgetType": "electron",
+    "Name": "Fold Desktop",
+    "Author": "AeroRider",
+    "Thumbnail": "",
+    "Path": ".",
+    "KillChildProcOnExit": false,
+    "RememberPosition": false
+}

@@ -8,7 +8,14 @@ let mainWindow
 //app.disableHardwareAcceleration(); // This will enable mouse click through
 
 function createWindow() {
-    mainWindow = new BrowserWindow({ width: 480, height: 220, resizable: false, maximizable: false, frame: false, transparent: true })
+    mainWindow = new BrowserWindow({
+        width: 480,
+        height: 220,
+        resizable: false,
+        maximizable: false,
+        frame: false,
+        transparent: true
+    })
     var id = mainWindow.id
 
     mainWindow.loadFile('index.html')
