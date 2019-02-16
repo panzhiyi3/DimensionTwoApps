@@ -3,7 +3,8 @@ const mainWin = require("electron").remote.getCurrentWindow();
 const { ipcRenderer, shell } = require("electron");
 const Path = require("path");
 const ElectronStore = require("electron-store");
-const electronStore = new ElectronStore();
+let storePath = process.env.APPDATA + "\\DimensionTwoApps\\FoldDesktop";
+const electronStore = new ElectronStore({cwd: storePath});
 let i18n = require("i18n");
 const SettingPanel = require("./settingPanel");
 const SortFile = require("./sortFile");
@@ -202,7 +203,7 @@ function foldOrExpand() {
             .addClass("fa-caret-left")
             .attr("title", i18n.__("Fold"));
         }
-        $(".sidebar-button").css("visibility", "visible");
+        //$(".sidebar-button").css("visibility", "visible");
 
         ipcRenderer.send("Expand");
     }
@@ -215,7 +216,7 @@ function foldOrExpand() {
             .addClass("fa-caret-right")
             .attr("title", i18n.__("Expand"));
         }
-        $(".sidebar-button").css("visibility", "hidden");
+        //$(".sidebar-button").css("visibility", "hidden");
 
         ipcRenderer.send("Fold");
     }

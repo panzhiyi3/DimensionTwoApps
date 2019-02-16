@@ -1,6 +1,8 @@
 window.$ = window.jQuery = require("./jquery.min");
 const ElectronStore = require("electron-store");
-const electronStore = new ElectronStore();
+let storePath = process.env.APPDATA + "\\DimensionTwoApps\\Note";
+const electronStore = new ElectronStore({cwd: storePath});
+
 let i18n = require("i18n");
 
 let nextNoteId = 0;
