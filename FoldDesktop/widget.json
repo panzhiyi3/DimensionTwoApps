@@ -3,7 +3,7 @@
     "Name": "Fold Desktop",
     "Author": "AeroRider",
     "Thumbnail": "thumbnail.png",
-    "Path": ".",
+    "Path": ".\\app.asar",
     "KillChildProcOnExit": false,
     "RememberPosition": false
 }

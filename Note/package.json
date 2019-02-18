@@ -27,7 +27,7 @@
     },
     "nodeGypRebuild": false,
     "npmRebuild": false,
-    "asar": false
+    "asar": true
   },
   "postinstall": "electron-builder install-app-deps"
 }

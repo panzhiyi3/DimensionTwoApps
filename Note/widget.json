@@ -3,5 +3,5 @@
     "Name": "Note",
     "Author": "AeroRider",
     "Thumbnail": "thumbnail.png",
-    "Path": "."
+    "Path": ".\\app.asar"
 }
