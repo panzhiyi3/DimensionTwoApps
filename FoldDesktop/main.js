@@ -20,18 +20,7 @@ let windowCollapsed = false;
 
 let currentPath = Path.dirname(require.main.filename || process.mainModule.filename);
 let watchingPaths = [];
-let libDimensionDesk = ffi.Library(currentPath + "\\DimensionDeskHelper64", {
-    "Init": ["void", []],
-    "UnInit": ["void", []],
-    "GetCurrentDesktopPath": [ "int", ["char *", "int", "int *" ] ],
-    "GetAllUsersDesktopPath": [ "int", ["char *", "int", "int *" ] ],
-    "GetFileIconToBuffer": [ "int", ["string", "int", "char *", "int", "int *"] ],
-    "IsHiddenFile": ["int", ["string"]],
-    "IsShowHiddenFiles": ["int", []],
-    "IsShowFileExtName": ["int", []],
-    "ShowFileContextMenu": ["int", ["char *", "int", "string"]],
-    "ShellDeleteFile": ["int", ["char *", "int", "string", "bool"]]
-});
+let libDimensionDesk = null;
 
 // https://github.com/electron/electron/blob/master/docs/api/frameless-window.md
 // https://github.com/electron/electron/issues/1335
@@ -128,6 +117,30 @@ app.on("activate", function () {
 })
 
 function init(mainWindow) {
+    try {
+        // If run as asar package, ffi cannot read file in .asar archive, so we have to put the dll file outside
+        if(Path.win32.extname(currentPath).toLocaleLowerCase() == ".asar")
+        {
+            currentPath = Path.dirname(currentPath);
+        }
+
+        libDimensionDesk = ffi.Library(currentPath + "\\DimensionDeskHelper64", {
+                "Init": ["void", []],
+                "UnInit": ["void", []],
+                "GetCurrentDesktopPath": [ "int", ["char *", "int", "int *" ] ],
+                "GetAllUsersDesktopPath": [ "int", ["char *", "int", "int *" ] ],
+                "GetFileIconToBuffer": [ "int", ["string", "int", "char *", "int", "int *"] ],
+                "IsHiddenFile": ["int", ["string"]],
+                "IsShowHiddenFiles": ["int", []],
+                "IsShowFileExtName": ["int", []],
+                "ShowFileContextMenu": ["int", ["char *", "int", "string"]],
+                "ShellDeleteFile": ["int", ["char *", "int", "string", "bool"]]
+            });
+    } catch (error) {
+        app.quit();
+        return;
+    }
+
     libDimensionDesk.Init();
 
     watchingPaths = getDesktopPath();
@@ -212,7 +225,7 @@ function getDesktopPath() {
     let bufferLenth = 260 * 3;
     let sizeNeed = ref.alloc("int");
     let stringBuffer = new Buffer(bufferLenth).fill(0);
-    let currentPath = "";
+    let currentUserPath = "";
     let allUsersPath = "";
 
     let callret = libDimensionDesk.GetCurrentDesktopPath(stringBuffer, bufferLenth, sizeNeed);
@@ -223,7 +236,7 @@ function getDesktopPath() {
         callret = libDimensionDesk.GetCurrentDesktopPath(stringBuffer, bufferLenth, sizeNeed);
     }
     if(callret) {
-        currentPath = ref.readCString(stringBuffer); // Dll returns utf8 string
+        currentUserPath = ref.readCString(stringBuffer); // Dll returns utf8 string
     }
     else {
         return null;
@@ -245,7 +258,7 @@ function getDesktopPath() {
         return null;
     }
 
-    return [currentPath, allUsersPath];
+    return [currentUserPath, allUsersPath];
 }
 
 // get all files and folders
