@@ -2,6 +2,6 @@
     "WidgetType": "electron",
     "Name": "Calender",
     "Author": "AeroRider",
-    "Thumbnail": "",
+    "Thumbnail": "thumbnail.png",
     "Path": "."
 }

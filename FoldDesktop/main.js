@@ -76,7 +76,7 @@ function createWindow() {
 
     mainWindow.loadFile("index.html");
 
-    mainWindow.webContents.openDevTools({mode: "undocked"});
+    //mainWindow.webContents.openDevTools({mode: "undocked"});
     
     mainWindow.on("move", function() {
         if(mainWindow != null) {

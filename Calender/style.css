@@ -51,7 +51,7 @@ div {
 
 .month {
     text-align: right;
-    font-size: 30px;
+    font-size: 24px;
     line-height: 0%;
     color: var(--text-color);
 }
@@ -59,7 +59,7 @@ div {
 .monthday {
     text-align: right;
     margin-left: 0.5em;
-    font-size: 36px;
+    font-size: 24px;
     line-height: 0%;
     color: var(--text-color);
 }

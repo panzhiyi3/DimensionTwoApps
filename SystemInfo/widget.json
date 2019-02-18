@@ -2,6 +2,6 @@
     "WidgetType": "electron",
     "Name": "System Info",
     "Author": "AeroRider",
-    "Thumbnail": "",
+    "Thumbnail": "thumbnail.png",
     "Path": "."
 }

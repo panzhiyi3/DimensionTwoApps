@@ -17,7 +17,7 @@ function createWindow() {
 
     mainWindow.loadFile('index.html');
 
-    mainWindow.webContents.openDevTools({ mode: "undocked" });
+    //mainWindow.webContents.openDevTools({ mode: "undocked" });
 
     // Emitted when the window is closed.
     mainWindow.on('closed', function () {

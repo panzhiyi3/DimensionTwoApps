@@ -2,7 +2,7 @@
     "WidgetType": "electron",
     "Name": "Fold Desktop",
     "Author": "AeroRider",
-    "Thumbnail": "",
+    "Thumbnail": "thumbnail.png",
     "Path": ".",
     "KillChildProcOnExit": false,
     "RememberPosition": false
