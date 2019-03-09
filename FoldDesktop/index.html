@@ -5,6 +5,7 @@
     <link rel="stylesheet" type="text/css" href="style.css">
     <link rel="stylesheet" type="text/css" href="sidebar.css">
     <link rel="stylesheet" type="text/css" href="settingPanel.css">
+    <link rel="stylesheet" type="text/css" href="userGuide.css">
     <link rel="stylesheet" href="fontawesome/css/all.min.css">
     <meta charset="UTF-8">
     <title>Fold Desktop</title>
@@ -60,7 +61,7 @@
     <div class="setting-panel" style="display: none;">
         <div tabindex="0" class="setting-closebutton fas fa-fw fa-times"></div>
 
-        <div class="setting-caption">Setting</div>
+        <div class="setting-caption" id="setting-caption">Setting</div>
         <div class="splitline"></div>
         <div class="setting-group">
             <input type="checkbox" class="regular-checkbox" id="ShowMyComputer"/><label for="ShowMyComputer"></label>
@@ -72,6 +73,18 @@
         </div>
         <div class="setting-group">
             <button id="resetWindowBounds" class="regular-button">Reset window position and size</button>
+        </div>
+    </div>
+    <div class="user-guide" style="display: none;">
+        <div class="guide-caption" id="guide-caption">User guide</div>
+        <div class="splitline"></div>
+        <p id="guide-1">FoldDesktop是一个可折叠桌面程序</p>
+        <p id="guide-2">如果您的桌面文件较多，可以通过它来快速隐藏和显示图标</p>
+        <p id="guide-3">将鼠标移动到界面最左侧可以显示功能菜单，并能折叠和展开桌面图标</p>
+        <p id="guide-4">建议配合DimensionTwo设置中的“桌面模式”和“自动隐藏桌面图标”来使用</p>
+        <p id="guide-5">因为是第三方桌面程序，部分系统功能无法正常使用，例如复制粘贴撤销等，请见谅</p>
+        <div class="guide-group">
+            <button id="guideCloseBtn" class="regular-button" style="margin: 4px auto;">Close</button>
         </div>
     </div>
     <script>

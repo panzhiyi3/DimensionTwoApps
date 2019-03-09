@@ -7,6 +7,7 @@ let storePath = process.env.APPDATA + "\\DimensionTwoApps\\FoldDesktop";
 const electronStore = new ElectronStore({cwd: storePath});
 let i18n = require("i18n");
 const SettingPanel = require("./settingPanel");
+const UserGuide = require("./userGuide");
 const SortFile = require("./sortFile");
 
 let globalFileList = [];
@@ -107,6 +108,8 @@ function init() {
     SortFile.init();
 
     SettingPanel.init();
+
+    UserGuide.init();
 }
 
 function initI18N() {
@@ -128,10 +131,17 @@ function initI18N() {
     $("#sortByModTime").children("a").text(i18n.__("SortModTime"));
     $("#sidebar-settingbutton").attr("title", i18n.__("Setting"));
     $("#sidebar-quitbutton").attr("title", i18n.__("Exit"));
-    $(".setting-caption").text(i18n.__("Setting"));
+    $("#setting-caption").text(i18n.__("Setting"));
     $("#ShowMyComputer").parent().children("#text").text(i18n.__("ShowMyComputer"));
     $("#ShowRecycleBin").parent().children("#text").text(i18n.__("ShowRecycleBin"));
     $("#resetWindowBounds").text(i18n.__("ResetWinBounds"));
+    $("#guide-caption").text(i18n.__("UserGuideCaption"));
+    $("#guide-1").text(i18n.__("GuideText1"));
+    $("#guide-2").text(i18n.__("GuideText2"));
+    $("#guide-3").text(i18n.__("GuideText3"));
+    $("#guide-4").text(i18n.__("GuideText4"));
+    $("#guide-5").text(i18n.__("GuideText5"));
+    $("#guideCloseBtn").text(i18n.__("GuideCloseBtn"));
 }
 
 function onMouseWheel(e) {
@@ -229,7 +239,7 @@ function onSideBarSetting(e) {
 }
 
 function quit() {
-    if(confirm("确定要退出吗？")) {
+    if(confirm(i18n.__("QuitConfirm"))) {
         mainWin.close();
     }
 }

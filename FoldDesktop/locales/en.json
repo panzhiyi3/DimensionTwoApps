@@ -13,6 +13,7 @@
     "ShowMyComputer": "Show Computer icon",
     "ShowRecycleBin": "Show Recycle Bin icon",
     "ResetWinBounds": "Reset window position and size",
+    "QuitConfirm": "Are you sure to quit?",
 
     "FileType": "Type",
     "File": "File",
@@ -22,5 +23,13 @@
     "Bytes": "Bytes",
 
     "Computer": "Computer",
-    "RecycleBin": "Recycle Bin"
+    "RecycleBin": "Recycle Bin",
+
+    "UserGuideCaption": "User guide",
+    "GuideCloseBtn": "Close",
+    "GuideText1": "FoldDesktop is a collapsible desktop widget",
+    "GuideText2": "If you have many desktop files, you can use it to quickly hide and show icons",
+    "GuideText3": "Move the mouse to the left side to display the menu, and fold / expand the widget",
+    "GuideText4": "It is recommended to use the \"Desktop Mode\" and \"Auto Hide Desktop Icons\" in the DimensionTwo settings",
+    "GuideText5": "Because it is a third-party desktop program, some system functions can not be used normally, such as copy,paste and undo, sorry for the inconvenience"
 }

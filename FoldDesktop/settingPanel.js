@@ -2,7 +2,8 @@ window.$ = window.jQuery = require("./jquery.min");
 const mainWin = require("electron").remote.getCurrentWindow();
 const { ipcRenderer, shell } = require("electron");
 const ElectronStore = require("electron-store");
-const electronStore = new ElectronStore();
+let storePath = process.env.APPDATA + "\\DimensionTwoApps\\FoldDesktop";
+const electronStore = new ElectronStore({cwd: storePath});
 
 module.exports = {
     init: init,

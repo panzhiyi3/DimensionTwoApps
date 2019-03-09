@@ -1,0 +1,51 @@
+:root {
+    --dark-primary-color: rgb(178, 181, 243);
+    --default-primary-color: rgb(187, 190, 251);
+    --light-primary-color: rgb(219, 221, 255);
+
+    --dark-secondary-color: #b2b4fe;
+    --default-secondary-color: #dddfff;
+    --light-secondary-color: #f2f3ff;
+
+    --primary-text-color: #212121;
+    --disabled-color: #8f8f8f;
+    --divider-color: #bdbdbd;
+
+    --text-color: rgb(230, 230, 240);
+    --text-color-dark: rgb(52, 52, 54);
+    --text-color-dark-hover: rgb(100, 100, 106);
+}
+
+.user-guide {
+    position: fixed;
+    width: 400px;
+    left: 50%;
+    top: 50%;
+    border-radius: 2px;
+    transform: translateX(-50%) translateY(-50%);
+    background: rgb(230, 230, 240);
+    box-shadow: 0 0 8px rgba(0,0,0,0.8);
+    z-index: 100;
+}
+
+.guide-caption {
+    margin: 5px auto;
+    text-align: center;
+    color: var(--text-color-dark);
+    font-size: 16px;
+    cursor: default;
+}
+
+.guide-group {
+    margin: 10px auto;
+    padding: 4px;
+    border-radius: 2px;
+
+    display: flex;
+    flex-direction: center;
+    align-items: center;
+}
+
+.user-guide p {
+    margin: 20px 20px;
+}

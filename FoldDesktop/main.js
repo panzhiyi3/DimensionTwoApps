@@ -29,7 +29,9 @@ let libDimensionDesk = null;
 function createWindow() {
     let display = electron.screen.getPrimaryDisplay();
     let winRect = {
-        x: display.workArea.x - 5,
+        x: display.workArea.x - 5, // Minus 5,for there is a boder frame on the window, and cannot be remove, so skip 5px for border
+        // the window border don't generate mouse event, it made "hoverbar" useless
+    
         y:display.workArea.y,
         width: display.workArea.width / 2,
         height: display.workArea.height
@@ -48,9 +50,6 @@ function createWindow() {
 
     mainWindow = new BrowserWindow({
         title: "Fold Desktop",
-
-        // Minus 5,for there is a boder frame on the window, and cannot be remove, so skip 5px for border
-        // the window border don't generate mouse event, it made "hoverbar" useless
         x: winRect.x,
         y: winRect.y,
         width: winRect.width,

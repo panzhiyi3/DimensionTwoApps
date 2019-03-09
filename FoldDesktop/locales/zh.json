@@ -13,6 +13,7 @@
     "ShowMyComputer": "显示我的电脑图标",
     "ShowRecycleBin": "显示回收站图标",
     "ResetWinBounds": "重置窗口位置和大小",
+    "QuitConfirm": "确定要退出吗？",
 
     "FileType": "文件类型",
     "File": "文件",
@@ -22,5 +23,13 @@
     "Bytes": "字节",
 
     "Computer": "计算机",
-    "RecycleBin": "回收站"
+    "RecycleBin": "回收站",
+
+    "UserGuideCaption": "用户指南",
+    "GuideCloseBtn": "关闭",
+    "GuideText1": "FoldDesktop是一个可折叠桌面程序",
+    "GuideText2": "如果您的桌面文件较多，可以通过它来快速隐藏和显示图标",
+    "GuideText3": "将鼠标移动到界面最左侧可以显示功能菜单，并能折叠和展开桌面图标",
+    "GuideText4": "建议配合DimensionTwo设置中的“桌面模式”和“自动隐藏桌面图标”来使用",
+    "GuideText5": "因为是第三方桌面程序，部分系统功能无法正常使用，例如复制粘贴撤销等，请见谅"
 }
